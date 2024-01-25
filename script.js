@@ -231,18 +231,35 @@ function getGraph() {
       paper.on('element:pointerclick', function(view, evt) {
         evt.stopPropagation();
         toggleBranch(view.model);
+        
       });
     
 
       //Function that is used to collapse and uncollapse the child element
-      function toggleBranch(root) {
-        //retrives the value of the collapsed attribute from the root model.
-        var shouldHide = !root.get('collapsed');
-        //Sets the element to collapse (true or false)
-        root.set('collapsed', shouldHide);
-        graph.getSuccessors(root).forEach(function(successor) {
-            successor.set('hidden', shouldHide);
-            successor.set('collapsed', false);
+      function toggleBranch(child) {
+        if(child.isElement()){
+          //retrives the value of the collapsed attribute from the root model.
+          var shouldHide = !child.get('collapsed');
+          //Sets the element to collapse (true or false)
+          child.set('collapsed', shouldHide);
+          const successrorCells = graph.getSubgraph([
+              ...graph.getSuccessors(child),
+
+              //...graph.getLinks(child),
+          ])
+          successrorCells.forEach(function(successor) {
+              successor.set('hidden', shouldHide);
+              successor.set('collapsed', false);
+          });
+        }
+
+
+        // Handle links connected to the child, inbound set to false so that the root element does not collapse
+        const links = graph.getConnectedLinks(child, { inbound: false, outbound: true });
+        //Array of all the links that goes out of the root
+        links.forEach(function(link) {
+            // Set the 'hidden' attribute for the link
+            link.set('hidden', shouldHide);            
         });
       }
 
