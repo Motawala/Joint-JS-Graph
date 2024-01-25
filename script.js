@@ -55,7 +55,8 @@ function makeOutcomeNode(id,name) {
       },
       body: {
         strokeWidth: 2,
-        fill: "#555555"
+        fill: "#555555",
+        cursor: "grab"
       },
       label: {
         fontWeight: "bold",
@@ -65,7 +66,8 @@ function makeOutcomeNode(id,name) {
         stroke: "#333333",
         strokeWidth: 5,
         paintOrder: "stroke",
-        text: name
+        text: name,
+        cursor: "text"
        }
     },
     ports: {
@@ -164,7 +166,8 @@ function setPorts(el, ports) {
       group: "rdaf",
       attrs: {
         portLabel: {
-          text: `${port}`
+          text: `${port}`,
+          
         }
       },
       args: {
@@ -242,10 +245,9 @@ function getGraph() {
           var shouldHide = !child.get('collapsed');
           //Sets the element to collapse (true or false)
           child.set('collapsed', shouldHide);
+          //Successor Cells collects all the elements that are linked to the current(active) element.
           const successrorCells = graph.getSubgraph([
               ...graph.getSuccessors(child),
-
-              //...graph.getLinks(child),
           ])
           successrorCells.forEach(function(successor) {
               successor.set('hidden', shouldHide);
