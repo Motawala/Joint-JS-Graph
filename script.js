@@ -326,7 +326,7 @@ function combineNodes(parentNodeModel, parentNode){
           linkChilds(parentNodeModel, parentNode[key])
           console.log(j, parentNode[key])
         }else if(Array.isArray(parentNode[key])){
-          console.log("here")
+            //If the parent has multiple subtopic and those subtopics have multiple childs
             parentNode[key].forEach(childs =>{
                 linkChilds(parentNodeModel,childs);
             })
