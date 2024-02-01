@@ -33,7 +33,10 @@
             "@type": "https://schema.org/Thing",
             "name": "Identification of goals and roles",
             "additionalType": "RdAF Subtopic",
-            "description": "An exercise to define the objectives of, and responsible individuals for, various aspects of research data management (RDM)."
+            "description": "An exercise to define the objectives of, and responsible individuals for, various aspects of research data management (RDM).",
+            "sunyrdaf:generates":[
+                "https://data.suny.edu/entities/oried/rdaf/nist/E.1.3"
+            ]
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/nist/E.1.3",

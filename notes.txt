@@ -1,0 +1,110 @@
+"@type": "https://data.suny.edu/vocabs/oried/rdaf/suny/Outcome",
+        "sunyrdaf:resultsFrom": {
+          "@type":  "https://data.suny.edu/vocabs/oried/rdaf/suny/Activity"
+        },
+        "@type": "https://schema.org/Thing",
+        "sunyrdaf:includes": {
+          "@type": "https://schema.org/Thing"  // for some reason it doesn't expand this to the fully object - need to investigate why
+        },
+        "@type": "https://schema.org/Thing",
+        "sunyrdaf:generates": {
+          "@type": "https://data.suny.edu/entities/oried/rdaf/suny/Outcome"   // for some reason it doesn't expand this to the fully object - need to investigate why
+        },
+        "@type": "https://data.suny.edu/vocabs/oried/rdaf/suny/Activity",
+        "sunyrdaf:extends": {
+          "@type":  "https://data.suny.edu/entities/oried/rdaf/nist/E"   // for some reason it doesn't expand this to the fully object - need to investigate why
+        },
+
+
+
+     if(activity && activity['sunyrdaf:generates'] && Array.isArray(activity['sunyrdaf:generates'])){
+          if(activity['@id'] != undefined){
+            const parentNode = activity;
+            var childNode = activity['sunyrdaf:generates'][0]
+            console.log(childNode)
+            combineNodes(parentNode, childNode)
+            childNode = activity['sunyrdaf:generates'][1]
+            combineNodes(parentNode, childNode)
+          }
+        }
+        if(activity && activity['sunyrdaf:includes'] && Array.isArray(activity['sunyrdaf:includes'])){
+          if(activity['@id'] != undefined){
+            console.log(Object.entries(activity['sunyrdaf:includes']))
+            const parentNode = activity;
+            var childNode = activity['sunyrdaf:includes'][0]
+            console.log(childNode)
+            combineNodes(parentNode, childNode)
+            childNode = activity['sunyrdaf:includes'][1]
+            combineNodes(parentNode, childNode)
+          }
+        }
+        if(activity && activity['sunyrdaf:extends'] && Array.isArray(activity['sunyrdaf:extends'])){
+          if(activity['@id'] != undefined){
+            const parentNode = activity;
+            var childNode = activity['sunyrdaf:extends'][0]
+            console.log(childNode)
+            combineNodes(parentNode, childNode)
+            childNode = activity['sunyrdaf:extends'][1]
+            combineNodes(parentNode, childNode)
+          }
+        }
+        if(activity && activity['sunyrdaf:resultsFrom'] && Array.isArray(activity['sunyrdaf:resultsFrom'])){
+          if(activity['@id'] != undefined){
+            const parentNode = activity;
+            var childNode = activity['sunyrdaf:extends'][0]
+            console.log(childNode)
+            combineNodes(parentNode, childNode)
+            childNode = activity['sunyrdaf:extends'][1]
+            combineNodes(parentNode, childNode)
+        }
+            
+      
+      
+
+          
+
+
+        }
+
+
+
+
+
+
+        function createOutcomeButton(){
+  var outcomeButton = joint.elementTools.Button.extend({
+    name: 'info-button',
+    magnet:'body',
+    options: {
+        focusOpacity: 0.5,
+        distance: 60,
+        markup: [{
+            tagName: 'rect',
+            selector: 'body',
+            attributes: {
+                'height': 20,
+                'width':60,
+                'fill': 'white',
+                'cursor': 'pointer',
+                'stroke': 'red',
+                'stroke-width': 2,
+                'pointer-events': 'none',
+                text: {text: 'Outcome'},
+            }
+        }, {
+            tagName: 'path',
+            attributes: {
+                'fill': 'none',
+                'stroke': '#FFFFFF',
+                'stroke-width': 10,
+                'pointer-events': 'none',
+                
+            }
+        }],
+    }
+  });
+
+
+  var OutcomeButton = new outcomeButton()
+  return OutcomeButton;
+}
