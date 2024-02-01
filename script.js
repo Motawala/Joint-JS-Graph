@@ -603,4 +603,3 @@ function makeStageNode(id, name){
 }
 
 getGraph();
-
