@@ -346,6 +346,13 @@ function combineNodes(parentNodeModel, parentNode){
 
  //Function that is used to collapse and uncollapse the child element
 function toggleBranch(child, currentTopic) {
+  const sunyrdafValue = Object.keys(currentTopic).find(key => key.includes("sunyrdaf"));
+    if(sunyrdafValue != undefined){
+      //currentTopic[sunyrdafValues] are the childs of the currentTopic clicked
+      //child is the model of the currentTopic
+      //currentTopic is the topic the user is interacting with
+      combineNodes(child, currentTopic)
+    }
   if(child.isElement()){
     //retrives the value of the collapsed attribute from the root model.
     var shouldHide = !child.get('collapsed');
@@ -359,17 +366,8 @@ function toggleBranch(child, currentTopic) {
         successor.set('hidden', shouldHide);
         successor.set('collapsed', false);
     });
-    const sunyrdafValue = Object.keys(currentTopic).find(key => key.includes("sunyrdaf"));
-    if(sunyrdafValue != undefined){
-      //currentTopic[sunyrdafValues] are the childs of the currentTopic clicked
-      //child is the model of the currentTopic
-      //currentTopic is the topic the user is interacting with
-      combineNodes(child, currentTopic)
-    }
+    
   }
-
-
-
   // Handle links connected to the child, inbound set to false so that the root element does not collapse
   const links = graph.getConnectedLinks(child, { inbound: false, outbound: true });
   //Array of all the links that goes out of the root
