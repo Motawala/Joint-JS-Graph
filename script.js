@@ -8,13 +8,14 @@ const graph = new dia.Graph({}, { cellNamespace: shapes });
 const paper = new dia.Paper({
   model: graph,
   cellViewNamespace: shapes,
-  width: "100%",
-  height: "100%",
+  width: "1000%",
+  height: "1000%",
   gridSize: 20,
   drawGrid: { name: "mesh" },
   async: true,
+  overflow: true,
   sorting: dia.Paper.sorting.APPROX,
-  background: { color: "#F3F7F6" },
+  background: { color: "#F3F7F6", overflow: true },
   defaultLink: () => new shapes.standard.Link(),
   validateConnection: (sv, _sm, tv, _tm) => sv !== tv,
   linkPinning: false,
@@ -255,7 +256,6 @@ function getGraph() {
       //Events that are showed when the user interacts with an element of the page
       paper.on('element:pointerclick', function(view, evt) {
         evt.stopPropagation();
-        //console.log(view.model['id'])
         let currentTopic;
         const getFrame = frame["@graph"];
         getFrame.forEach(topic =>{
@@ -276,12 +276,14 @@ function getGraph() {
   });
 }
 
-
+var x = 250;
+var y = 500;
 //Function gets the child Node from the parent Node and links the child to the parent.
 function linkChilds(parentNode, childNode){
   if(childNode['name'] != undefined){
       //Linking single childs to its parent
       const el2 = makeActivityNode(childNode['@id'], childNode['name']);
+      el2.position(x+30, y+50);
       const l1 = makeLink(parentNode,el2,"A");
       graph.addCells([el2, l1]);
     }else{
@@ -319,12 +321,10 @@ function combineNodes(parentNodeModel, parentNode){
     for(const key in parentNode){
 
       if(key.startsWith('sunyrdaf')){
-        console.log(key, parentNode[key], 'j: ', j)
         linkChilds(parentNodeModel, parentNode[key])
         if(parentNode[key]['name'] != undefined){
          //Creates a single extended node
           linkChilds(parentNodeModel, parentNode[key])
-          console.log(j, parentNode[key])
         }else if(Array.isArray(parentNode[key])){
             //If the parent has multiple subtopic and those subtopics have multiple childs
             parentNode[key].forEach(childs =>{

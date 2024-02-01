@@ -1,3 +1,7 @@
+body{
+  overflow: auto;
+}
+
 :root{
     --side_width: 200px;
 }
