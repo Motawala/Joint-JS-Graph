@@ -1,0 +1,9 @@
+else{
+    const out = createConsiderations(topic[key]['@id'], topic['name'])
+    const linkTopicToOutcome = makeLink(parentNode, out)
+    out.prop('name/first', "Considerations")
+    out.set('hidden', true)
+    linkTopicToOutcome.set('hidden',true)
+    linkTopicToOutcome.labels([{attrs:{text:{text: "Considerations"}}}])
+    arr.push([out, linkTopicToOutcome])
+  }

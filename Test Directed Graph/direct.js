@@ -2,28 +2,49 @@ const { dia, elementTools, shapes, linkTools, util } = joint;
 // Create a new directed graph
 const graph = new dia.Graph({}, { cellNamespace: shapes });
 
+//I need to look into it and see if it can help us with the link layout
+var CustomLinkView = joint.dia.LinkView.extend({
+  contextmenu: function(evt, x, y) {
+      this.addLabel(x, y, 45, {
+          absoluteDistance: true,
+          reverseDistance: true, // applied only when absoluteDistance is set
+          absoluteOffset: true,
+          keepGradient: true,
+          ensureLegibility: true // applied only when keepGradient is set
+      });
+  }
+});
+
 // Create a new paper, which is a wrapper around SVG element
 const paper = new dia.Paper({
-    el: document.getElementById('graph-container'),
-    model: graph,
-    width: 10000,
-    height: 10000,
-    gridSize: 10,
-    drawGrid: true,
-    background: {
-        color: '#f9f9f9'
-    },
-    async: true,
-    //Viewport function supports collapsing/uncollapsing behaviour on paper
-    viewport: function(view) {
-        // Return true if model is not hidden
-        return !view.model.get('hidden');
-    }
+  inkView: CustomLinkView,
+  interactive: { vertexAdd: false }, // disable default vertexAdd interaction
+  el: document.getElementById('graph-container'),
+  model: graph,
+  width: 10000,
+  height: 20000,
+  gridSize: 10,
+  drawGrid: true,
+  background: {
+    color: '#f9f9f9'
+  },
+  async: true,
+  //Viewport function supports collapsing/uncollapsing behaviour on paper
+  viewport: function(view) {
+    // Return true if model is not hidden
+    return !view.model.get('hidden');
+  }
 });
-        
+
+
+/*
+  There is not button set on the Stages yet so this is an event handler for when clicked on any of the stages
+*/
 paper.on('element:pointerclick', function(view, evt) {
     evt.stopPropagation();
-    toggleBranch(view.model);
+    if(view.model['id'] == "https://data.suny.edu/entities/oried/rdaf/nist/E" || view.model['id'] == "https://data.suny.edu/entities/oried/rdaf/nist/P" || view.model['id'] == "https://data.suny.edu/entities/oried/rdaf/nist/GA"){
+      toggleBranch(view.model);
+    }
     // resetting the layout here has an effect after collapsing and then moving the topic nodes 
     // manually to be closer (it moves them so the expanded nodes will fit if you re-expand after
     // moving. It doesn't seem to have any effect after just collapsing a node's children 
@@ -32,11 +53,7 @@ paper.on('element:pointerclick', function(view, evt) {
     //doLayout();
 })
 
-
-
-
-        
-
+  
 function buildTheGraph(){
   var Elements = []
     fetch('graph.jsonld')
@@ -86,27 +103,35 @@ function buildTheGraph(){
               topic = node['sunyrdaf:includes']
               if(Array.isArray(topic)){
                 topic.forEach(topics =>{
+                  var tools = [];
                   if(topics){
-                    const element2 = createTopics(topics['@id'], topics['name'])
+                    //Creates the topic
+                    var element2 = createTopics(topics['@id'], topics['name'])
+                    //links the topic to the stages
                     const linkStageToTopics = makeLink(element1, element2)
-                    linkStageToTopics.labels([{
-                      attrs:{
-                        text:{
-                          text:"Topics"
-                        }
-                      }
-                    }])
-                    const OutcomeButton = outcomeButton();
-                    const linkToButton = makeLink(element2, OutcomeButton)
-                    OutcomeButton.prop('name/first', 'Button')
-                    Elements.push([OutcomeButton, linkToButton])
-                    checkOutcomes(topics, Elements, OutcomeButton)
-                    Elements.push([element2, linkStageToTopics])
-                    
+                    if(topics["sunyrdaf:includes"]){
+                      //Creates the consideration button if a topic includes consideration
+                      var port3 = createPort('Considerations', 'out');
+                      // Add custom tool buttons for each port
+                      element2.addPort(port3);// Adds a port to the element
+                      tools.push(createConsiderationButton(port3))//Create the button
+                      graph.addCells(element2);
+                      toolsView = new joint.dia.ToolsView({ tools: [tools]});
+                      element2.findView(paper).addTools(toolsView);//Embed the tools view into the element view
+                    }
+                    var port2 = createPort('Outcomes', 'out');
+                    // Add custom tool buttons for each port
+                    element2.addPort(port2);
+                    tools.push(createButton(port2))//Creates the Outcome button
+                    graph.addCells(element2);
+                    toolsView = new joint.dia.ToolsView({ tools: tools});
+                    element2.findView(paper).addTools(toolsView);
+                    linkStageToTopics.labels([{attrs:{text:{text:"Topics"}}}])
+                    checkOutcomes(topics, Elements, element2)
+                    Elements.push([linkStageToTopics])
                   }
                 })
               }
-              
             }
       });
       graph.addCells(Elements)
@@ -115,37 +140,96 @@ function buildTheGraph(){
 }
 
 
+
+
 //If we want to use a pre-defined algorithm to traverse over the tree and create the tree, we will still need seperate functions for each and every type of node,
 //Beacuse this will allows use to interact with the node later using its type when we put the buttons in function.          
 
 
 function checkOutcomes(topic, arr, parentNode){
+  //Creates all the Outcomes that are generated by the topic
   for (const key in topic){
-      if(key.startsWith('sunyrdaf')){
-          if(key == "sunyrdaf:generates"){
-              if(Array.isArray(topic[key])){
-                  topic[key].forEach(outcomes =>{
-                      const out = createOutcomes(outcomes['@id'], outcomes['name'])
-                      const linkTopicToOutcome = makeLink(parentNode, out)
-                      //out.set('hidden', true)
-                      //linkTopicToOutcome.set('hidden',true)
-                      linkTopicToOutcome.labels([{
-                        attrs:{
-                          text:{
-                            text:"Outcomes"
-                          }
-                        }
-                      }])
-                      arr.push([out])
-                      arr.push([linkTopicToOutcome])
-                  })
-              }
-          }
+    if(key.startsWith('sunyrdaf')){
+      if(key == "sunyrdaf:generates"){
+        if(Array.isArray(topic[key])){
+          topic[key].forEach(outcomes =>{
+            const out = createOutcomes(outcomes['@id'], outcomes['name'])
+            const linkTopicToOutcome = makeLink(parentNode, out)
+            out.prop('name/first', "Outcomes")
+            const embedButton = buttonView("Activities", out)
+            //Check for activities in the outcome
+            checkForActivities(outcomes, arr, out)
+            arr.push([linkTopicToOutcome])
+                      
+          })
+        }else{ //Condition if the topic has generated only one outcome
+          const out = createOutcomes(topic[key]['@id'], topic[key]['name'])
+            const linkTopicToOutcome = makeLink(parentNode, out)
+            out.prop('name/first', "Outcomes")
+            const embedButton = buttonView("Activities", out)
+            //Check for activities in the outcome
+            arr.push([linkTopicToOutcome])
+        }
+      }else if(key == "sunyrdaf:includes"){
+        //Creates consideration elements if a topic includes considerations
+        checkForConsiderations(topic, arr, parentNode, key);
       }
+    }
   
   }
   
 }
+
+//Function to create considerations nodes
+function checkForConsiderations(topic, arr, parentNode, key){
+  if(Array.isArray(topic[key])){
+    //Condition to handle topics that includes multiple considerations
+    topic[key].forEach(considerations =>{
+      const out = createConsiderations(considerations['@id'], considerations['name'])
+      const linkTopicToOutcome = makeLink(parentNode, out)
+      out.prop('name/first', "Considerations")
+      arr.push([out, linkTopicToOutcome])
+    })
+  }else{ //Condition to handle topics that includes a single considerations
+    const out = createConsiderations(topic[key]['@id'], topic[key]['name'])
+    const linkTopicToOutcome = makeLink(parentNode, out)
+    out.prop('name/first', "Considerations")
+    linkTopicToOutcome.labels([{attrs:{text:{text: "Considerations"}}}])
+    arr.push([out, linkTopicToOutcome])
+  }
+}
+
+//Function to Create activity nodes that are the results of the ouctomes generated
+function checkForActivities(outcome, arr, parentNode){
+  for (const key in outcome){
+    if(key.startsWith('sunyrdaf')){
+      if(key == "sunyrdaf:resultsFrom"){
+        if(Array.isArray(outcome[key])){ //Conditions to create multiple activities
+          outcome[key].forEach(activity =>{
+            const out = createConsiderations(activity['@id'], activity['name'])
+            const linkTopicToOutcome = makeLink(parentNode, out)
+            out.prop('name/first', "Activities")
+            linkTopicToOutcome.labels([{attrs:{text:{text: "Activities"}}}])
+            //arr.push([out])
+            arr.push([out, linkTopicToOutcome])
+          })
+        }else{// Condition to create a single activity
+          if(!outcome[key]['name'] == undefined){
+            const out = createConsiderations(outcome[key]['@id'], outcome[key]['name'])
+            const linkTopicToOutcome = makeLink(parentNode, out)
+            out.prop('name/first', "Activities")
+            linkTopicToOutcome.labels([{attrs:{text:{text: "Activities"}}}])
+            //arr.push([out])
+            arr.push([out, linkTopicToOutcome])
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
 
 function doLayout() {
   // Apply layout using DirectedGraph plugin
@@ -163,9 +247,6 @@ function doLayout() {
 
 buildTheGraph();
 //doLayout();
-
-
-
 
 
 

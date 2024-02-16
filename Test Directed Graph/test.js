@@ -1,3 +1,30 @@
+const { dia, elementTools, shapes, linkTools, util } = joint;
+// Create a new directed graph
+const graph = new dia.Graph({}, { cellNamespace: shapes });
+
+// Create a new paper, which is a wrapper around SVG element
+const paper = new dia.Paper({
+    el: document.getElementById('graph-container'),
+    model: graph,
+    width: 10000,
+    height: 10000,
+    gridSize: 10,
+    drawGrid: true,
+    background: {
+        color: '#f9f9f9'
+    },
+    async: true,
+    //Viewport function supports collapsing/uncollapsing behaviour on paper
+    viewport: function(view) {
+        // Return true if model is not hidden
+        return !view.model.get('hidden');
+    }
+});
+        
+
+
+let Elements = [];
+
 function exploreLinkedData(node, visited, parent) {
     // Check if the node has already been visited
     if (visited.has(node['@id'])) {
@@ -13,18 +40,25 @@ function exploreLinkedData(node, visited, parent) {
     if (parent) {
         //Create the child node, every node has a parent ID tag, look for the parentID in the graph and link the child
         console.log(`Parent Node ID: ${parent['@id']}`);
-    }else{
-        //Implement the function to create the parent node
-        console.log(`Node ID: ${node['@id']}`)
     }
     console.log("");
 
+    if(node['additionalType'] == "RdAF Stage"){
+        const stage = createStage(node['@id'], node['name'])
+        graph.addCells(stage)
+    }
     // Explore linked data
     if (node['sunyrdaf:includes']) {
         node['sunyrdaf:includes'].forEach(included_id => {
             let includedNode = getNodeById(included_id);
             if (includedNode) {
                 console.log("Included Data:");
+                const topics = createStage(includedNode['@id'], includedNode['name']);
+                const parentNode = findParent(node)
+                console.log(parentNode)
+                const link = makeLink(parentNode, topics);
+                //Elements.push([topics, link])
+                graph.addCells([topics, link])
                 exploreLinkedData(includedNode, visited, node);
             }
         });
@@ -35,6 +69,12 @@ function exploreLinkedData(node, visited, parent) {
             let extendedNode = getNodeById(extended_id);
             if (extendedNode) {
                 console.log("Extended Data:");
+                console.log("Included Data:");
+                const topics = createStage(extendedNode['@id'], extendedNode['name']);
+                const parentNode = findParent(node)
+                const link = makeLink(parentNode, topics);
+                //Elements.push([topics, link])
+                graph.addCells([topics, link])
                 exploreLinkedData(extendedNode, visited, node);
             }
         });
@@ -45,6 +85,12 @@ function exploreLinkedData(node, visited, parent) {
             let generatedNode = getNodeById(generated_id);
             if (generatedNode) {
                 console.log("Generated Data:");
+                console.log("Included Data:");
+                const topics = createStage(generatedNode['@id'], generatedNode['name']);
+                const parentNode = findParent(node)
+                const link = makeLink(parentNode, topics);
+                //Elements.push([topics, link])
+                graph.addCells([topics, link])
                 exploreLinkedData(generatedNode, visited, node);
             }
         });
@@ -55,6 +101,12 @@ function exploreLinkedData(node, visited, parent) {
             let resultNode = getNodeById(result_id);
             if (resultNode) {
                 console.log("Resulting Data:");
+                console.log("Included Data:");
+                const topics = createStage(resultNode['@id'], resultNode['name']);
+                const parentNode = findParent(node)
+                const link = makeLink(parentNode, topics);
+                //Elements.push([topics, link])
+                graph.addCells([topics, link])
                 exploreLinkedData(resultNode, visited, node);
             }
         });
@@ -62,7 +114,6 @@ function exploreLinkedData(node, visited, parent) {
 }
 
 function getNodeById(nodeId) {
-    console.log(nodeId)
     for (let graphNode of dataG['@graph']) {
         if (graphNode['@id'] == nodeId) {
             return graphNode;
@@ -85,8 +136,32 @@ fetch('graph.jsonld')
         for (let node of data['@graph']) {
             exploreLinkedData(node, visited);
         }
+        console.log(graph)
+        doLayout();
     })
     .catch(error => console.error('Error reading JSON file:', error));
 
+function findParent(node){
+    let parent
+    graph.getElements().forEach(data=> {
+        if(data['id'] == node['@id']){
+            parent = data;
+        }
+    })
+    return parent
+}
 
+function doLayout() {
+    // Apply layout using DirectedGraph plugin
+    layout = joint.layout.DirectedGraph.layout(graph, {
+    // commenting these out had no effect - maybe they are overridden by the router algorithm?
+      //      setLinkVertices: false, // Optional: Prevent the plugin from setting link vertices
+      //      nodeSep: 50,
+       //     edgeSep: 80,
+        rankDir: "LR",
+        ranker: 'tight-tree',
+        resizeClusters: false
+    });
+    return layout;
+}
 
