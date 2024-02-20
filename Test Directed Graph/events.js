@@ -77,65 +77,106 @@ function closeTheRest(element){
     the above close the Rest to close the rest of the tree
 */
 function toggelButton(node, typeOfPort){
+    
     var shouldHide = node.get('collapsed');
     
     node.set('collapsed', !shouldHide);
     if(typeOfPort == "Outcomes"){
-        if(node.get('collapsed')){
-            const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
-            OutboundLinks.forEach(links =>{
-                //Used the properties of the child elements to group them Eg:-  An activity that results from Outcome has the property of Outcomes
-                if(links.getTargetElement().prop('name/first') == "Outcomes"){
-                    links.getTargetElement().set('hidden', shouldHide)
-                    links.getTargetElement().set('collapsed', true)
-                    //Make the links visible
-                    links.set('hidden', shouldHide)
-                    var ActivitiesButton = links.getTargetElement().findView(paper)
-                    if(ActivitiesButton.hasTools()){
-                        ActivitiesButton.hideTools();
-                    }
-                }
-            })
-        }else{
-            //Hides when the event is called
-            const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
-            OutboundLinks.forEach(links =>{
-                if(links.getTargetElement().prop('name/first') == "Outcomes"){
-                    closeTheRest(links.getTargetElement())
-                    links.getTargetElement().set('hidden', true)
-                    links.getTargetElement().set('collapsed', false)
-                    //Make the links visible
-                    links.set('hidden', true)    
-                    links.getTargetElement().findView(paper).hideTools()
-                }
-            })
-        }
+        defaultEvent(node, typeOfPort)
     }
     if(typeOfPort == "Considerations"){
-        if(node.get('collapsed')){
-            const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
-            OutboundLinks.forEach(links =>{
-                if(links.getTargetElement().prop('name/first') == "Considerations"){
-                    links.getTargetElement().set('hidden', shouldHide)
-                    links.getTargetElement().set('collapsed', true)
-                    //Make the links visible
-                    links.set('hidden', shouldHide)
-                }
-            })
-        }else{
-            const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
-            OutboundLinks.forEach(links =>{
-                if(links.getTargetElement().prop('name/first') == "Considerations"){
-                    links.getTargetElement().set('hidden', true)
-                    links.getTargetElement().set('collapsed', false)
-                    //Make the links visible
-                    links.set('hidden', true)
-                }
-            })
-        }
+        defaultEvent(node, typeOfPort)
+    }
+    if(typeOfPort == "Activities"){
+        defaultEvent(node, typeOfPort)
+    }
+    if(typeOfPort == "RDaF Subtopic"){
+        
+        const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
+        defaultEvent(node, typeOfPort)
     }
 }
 
+
+//This function handles the event for the 3 buttons on the outcomes node
+function radioButtonEvents(elementView, port){
+    var circleElements = elementView._toolsView.$el[0].querySelectorAll('circle')
+    circleElements.forEach(circleElement =>{
+    //Still need to wrap around this event because we just need to set one button at a time not all should be selected.
+    var fill = circleElement.getAttribute('fill');
+    var activityButton = elementView._toolsView.tools[1].$el[0]
+    //Change the color of the element when clicked
+    if(circleElement.id == `${port.id}`){
+        if(circleElement.id.startsWith('A')){
+            //When clicked on Achieved, hide the activity button
+            activityButton.style.visibility = "hidden"
+            circleElement.setAttribute('fill', 'Green')
+        }
+        
+        if(circleElement.id.startsWith('P')){
+            //When clicked on In Progress button, show the activity button
+            activityButton.style.visibility = "visible"
+            circleElement.setAttribute('fill', 'Orange')
+        }
+        if(circleElement.id.startsWith('N')){
+            //When clicked on Not Started Button, show the activity button
+            activityButton.style.visibility = "visible"
+            circleElement.setAttribute('fill', 'Red')
+        }
+    }else{
+        //unhighlights the rest of the elements that the user is not interacting with
+        circleElement.setAttribute('fill', 'white')
+    }
+    })
+}
+
+
+function defaultEvent(node, typeOfPort){
+    if(node.get('collapsed')){
+        const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
+        OutboundLinks.forEach(links =>{
+            if(links.getTargetElement().prop('name/first') == typeOfPort){
+                if(typeOfPort == "RDaF Subtopic"){
+                    console.log('subbhbf')
+                }
+                links.getTargetElement().set('hidden', false)
+                links.getTargetElement().set('collapsed', true)
+                //Make the links visible
+                links.set('hidden', false)
+                if(typeOfPort == "Outcomes"){
+                //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
+                    var ActivitiesButton = links.getTargetElement().findView(paper)
+                    if(ActivitiesButton.hasTools()){
+                        //Query's for the Activity Button on the and hides it
+                        button = ActivitiesButton._toolsView.tools[1].$el[0]
+                        button.style.visibility = "hidden"
+                    }
+                }
+            }
+        })
+            
+    }else{
+        const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
+        OutboundLinks.forEach(links =>{
+            if(links.getTargetElement().prop('name/first') == typeOfPort){
+                links.getTargetElement().set('hidden', true)
+                links.getTargetElement().set('collapsed', false)
+                //Make the links visible
+                links.set('hidden', true)
+                if(typeOfPort == "Outcomes"){
+                    //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
+                    var ActivitiesButton = links.getTargetElement().findView(paper)
+                    if(ActivitiesButton.hasTools()){
+                        //Query's for the Activity Button on the and hides it
+                        button = ActivitiesButton._toolsView.tools[1].$el[0]
+                        button.style.visibility = "hidden"
+                    }
+                }
+            }
+        })
+            
+    }
+}
 
 
 

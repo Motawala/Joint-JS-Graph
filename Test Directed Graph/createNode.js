@@ -5,7 +5,6 @@ const PORT_GAP = 20;
 
 //Thing to consider -> later
 joint.routers.randomWalk = function(vertices, args, linkView) {
-
     var NUM_BOUNCES = args.numBounces || 1;
     vertices = joint.util.toArray(vertices).map(g.Point);
     for (var i = 0; i < NUM_BOUNCES; i++) {
@@ -34,7 +33,7 @@ function makeLink(from,to) {
      // with them all to see which works best
      link.router('metro',{
         margin:0,
-        perpendicular:false,
+        perpendicular:true,
      });
      link.connector('normal');
      link.set('hidden', true);
@@ -206,7 +205,7 @@ function createTopics(id, name){
         //},
         size: {
           width: width,
-          height: 65
+          height: 90
         },
         attrs: {
           label: {
@@ -221,7 +220,7 @@ function createTopics(id, name){
            },
            body: {
             strokeWidth: 2,
-            fill: "#4d80b3",
+            fill: "	#ffcccc",
             cursor: "grab"
           },
         },
@@ -234,7 +233,44 @@ function createTopics(id, name){
       return node
 }
 
-
+function createActivities(id, name){
+  
+  const textWidth = name.length * 10; // Approximate width based on font size and average character width
+  const width = Math.max(textWidth, 200); // Ensure a minimum width to accommodate shorter text
+  const node =  new joint.shapes.standard.Rectangle({
+      id: id,
+      //position: {
+      //  x: 250,
+      //  y: 500
+      //},
+      size: {
+        width: width,
+        height: 65
+      },
+      attrs: {
+        label: {
+          //fontWeight: "bold",
+          fontSize: 15,
+          fontFamily: "sans-serif",
+          fill: "black",
+          stroke: "#333333",
+          paintOrder: "stroke",
+          text: name,
+         },
+         body: {
+          strokeWidth: 2,
+          fill: "white",
+          cursor: "grab"
+        },
+      },
+      ports:{
+        id: "Considerations",
+        items: []
+      }
+    });
+    node.set('hidden', true);
+    return node
+}
 
 function setPorts(el, ports) {
     let width = 0;
@@ -271,10 +307,11 @@ function setPorts(el, ports) {
 
 
 //Creates The ports on the Elements
-function createPort(id,group) {
+function createPort(id,group, name) {
   var port = {
     id: id,
     label: {
+      text: name,
       position: {
         name: 'left'
       },
