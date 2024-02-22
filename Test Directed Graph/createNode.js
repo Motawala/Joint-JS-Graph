@@ -34,6 +34,11 @@ function makeLink(from,to) {
      link.router('metro',{
         margin:0,
         perpendicular:true,
+        step:10,
+        padding:0 | 'bottom',
+        startDirections: ['right'],
+        endDirections: ['left'],
+        //excludeEnds: ['source'],
      });
      link.connector('normal');
      link.set('hidden', true);
@@ -155,8 +160,11 @@ function createTopics(id, name){
 
 
  function createConsiderations(id, name){
-
-  const textWidth = name.length * 10; // Approximate width based on font size and average character width
+  if(typeof name == 'string'){
+    var textWidth = name.length * 10
+  }else{
+    var textWidth = 200
+  }
   const width = Math.max(textWidth, 200); // Ensure a minimum width to accommodate shorter text
   const node =  new joint.shapes.standard.Rectangle({
       id: id,
@@ -259,7 +267,7 @@ function createActivities(id, name){
          },
          body: {
           strokeWidth: 2,
-          fill: "white",
+          fill: "#9999e6",
           cursor: "grab"
         },
       },

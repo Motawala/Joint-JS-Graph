@@ -2,22 +2,9 @@ const { dia, elementTools, shapes, linkTools, util } = joint;
 // Create a new directed graph
 const graph = new dia.Graph({}, { cellNamespace: shapes });
 
-//I need to look into it and see if it can help us with the link layout
-var CustomLinkView = joint.dia.LinkView.extend({
-  contextmenu: function(evt, x, y) {
-      this.addLabel(x, y, 45, {
-          absoluteDistance: true,
-          reverseDistance: true, // applied only when absoluteDistance is set
-          absoluteOffset: true,
-          keepGradient: true,
-          ensureLegibility: true // applied only when keepGradient is set
-      });
-  }
-});
 
 // Create a new paper, which is a wrapper around SVG element
 const paper = new dia.Paper({
-  inkView: CustomLinkView,
   interactive: { vertexAdd: false }, // disable default vertexAdd interaction
   el: document.getElementById('graph-container'),
   model: graph,
@@ -97,37 +84,37 @@ function buildTheGraph(){
       duplicateFrame = frameArray
       frameArray.forEach(node =>{
             if(node['additionalType'] == "RdAF Stage"){
-              const element1 = createStage(node['@id'], node['name'])
-              setPorts(element1, ['Topics']);
-              Elements.push([element1])
+              const stage = createStage(node['@id'], node['name'])
+              setPorts(stage, ['Topics']);
+              Elements.push([stage])
               topic = node['sunyrdaf:includes']
               if(Array.isArray(topic)){
                 topic.forEach(topics =>{
                   var tools = [];
                   if(topics){
                     //Creates the topic
-                    var element2 = createTopics(topics['@id'], topics['name'])
+                    var topicElement = createTopics(topics['@id'], topics['name'])
                     //links the topic to the stages
-                    const linkStageToTopics = makeLink(element1, element2)
+                    const linkStageToTopics = makeLink(stage, topicElement)
                     if(topics["sunyrdaf:includes"]){
                       //Creates the consideration button if a topic includes consideration
                       var port3 = createPort('Considerations', 'out');
                       // Add custom tool buttons for each port
-                      element2.addPort(port3);// Adds a port to the element
+                      topicElement.addPort(port3);// Adds a port to the element
                       tools.push(createConsiderationButton(port3))//Create the button
-                      graph.addCells(element2);
+                      graph.addCells(topicElement);
                       toolsView = new joint.dia.ToolsView({ tools: [tools]});
-                      element2.findView(paper).addTools(toolsView);//Embed the tools view into the element view
+                      topicElement.findView(paper).addTools(toolsView);//Embed the tools view into the element view
                     }
                     var port2 = createPort('Outcomes', 'out');
                     // Add custom tool buttons for each port
-                    element2.addPort(port2);
+                    topicElement.addPort(port2);
                     tools.push(createButton(port2))//Creates the Outcome button
-                    graph.addCells(element2);
+                    graph.addCells(topicElement);
                     toolsView = new joint.dia.ToolsView({ tools: tools});
-                    element2.findView(paper).addTools(toolsView);
+                    topicElement.findView(paper).addTools(toolsView);
                     linkStageToTopics.labels([{attrs:{text:{text:"Topics"}}}])
-                    checkOutcomes(topics, Elements, element2)
+                    checkOutcomes(topics, Elements, topicElement)
                     Elements.push([linkStageToTopics])
                   }
                 })
@@ -151,23 +138,21 @@ function checkOutcomes(topic, arr, parentNode){
       if(key == "sunyrdaf:generates"){
         if(Array.isArray(topic[key])){
           topic[key].forEach(outcomes =>{
-            const out = createOutcomes(outcomes['@id'], outcomes['name'])
-            const linkTopicToOutcome = makeLink(parentNode, out)
-            out.prop('name/first', "Outcomes")
-            var portName1 = ['NT1', "PG1", "AC1"]
-            const embedButton = buttonView("Activities", out, portName1)
+            const outcomeElement = createOutcomes(outcomes['@id'], outcomes['name'])
+            const linkTopicToOutcome = makeLink(parentNode, outcomeElement)
+            outcomeElement.prop('name/first', "Outcomes")
             //Check for activities in the outcome
-            checkForActivities(outcomes, arr, out)
+            checkForActivities(outcomes, arr, outcomeElement)
+            //checkForConsiderations(outcomes, arr, outcomeElement);
             arr.push([linkTopicToOutcome])
           })
         }else{ //Condition if the topic has generated only one outcome
-          const out = createOutcomes(topic[key]['@id'], topic[key]['name'])
-            const linkTopicToOutcome = makeLink(parentNode, out)
-            out.prop('name/first', "Outcomes")
-            var portName1 = ['NT1', "PG1", "AC1"]
-            const embedButton = buttonView("Activities", out, portName1)
-            //Check for activities in the outcome
-            arr.push([linkTopicToOutcome])
+          const outcomeElement = createOutcomes(topic[key]['@id'], topic[key]['name'])
+          const linkTopicToOutcome = makeLink(parentNode, outcomeElement)
+          outcomeElement.prop('name/first', "Outcomes")
+          //Check for activities in the outcome
+          checkForActivities(topic[key], arr, outcomeElement)
+          arr.push([outcomeElement,linkTopicToOutcome])
         }
       }else if(key == "sunyrdaf:includes"){
         //Creates consideration elements if a topic includes considerations
@@ -182,60 +167,74 @@ function checkOutcomes(topic, arr, parentNode){
 }
 
 //Function to create considerations nodes
-function checkForConsiderations(topic, arr, parentNode){
-  if(Array.isArray(topic)){
+function checkForConsiderations(outcome, arr, parentNode){
+  if(Array.isArray(outcome)){
     //Condition to handle topics that includes multiple considerations
-    topic.forEach(considerations =>{
-      const out = createConsiderations(considerations['@id'], considerations['name'])
-      const linkTopicToOutcome = makeLink(parentNode, out)
-      out.prop('name/first', "Considerations")
-      arr.push([out, linkTopicToOutcome])
+    outcome.forEach(considerations =>{
+      if(considerations['name'] == undefined){
+        duplicateFrame.forEach(nodes =>{
+          if(nodes['@id'] == considerations){
+            const considerationElement = createConsiderations(nodes['@id'], nodes['name'])
+            const linkOutcomeToConsideration = makeLink(parentNode, considerationElement)
+            considerationElement.prop('name/first', "Considerations")
+            arr.push([considerationElement, linkOutcomeToConsideration])
+          }
+        })
+        
+      }else{
+        const considerationElement = createConsiderations(considerations['@id'], considerations['name'])
+        const linkOutcomeToConsideration = makeLink(parentNode, considerationElement)
+        considerationElement.prop('name/first', "Considerations")
+        arr.push([considerationElement, linkOutcomeToConsideration])
+      }
     })
   }else{ //Condition to handle topics that includes a single considerations
-    const out = createConsiderations(topic['@id'], topic['name'])
-    const linkTopicToOutcome = makeLink(parentNode, out)
-    out.prop('name/first', "Considerations")
-    linkTopicToOutcome.labels([{attrs:{text:{text: "Considerations"}}}])
-    arr.push([out, linkTopicToOutcome])
+    const considerationElement = createConsiderations(outcome['@id'], outcome['name'])
+    const linkOutcomeToConsideration = makeLink(parentNode, considerationElement)
+    considerationElement.prop('name/first', "Considerations")
+    linkOutcomeToConsideration.labels([{attrs:{text:{text: "Considerations"}}}])
+    arr.push([considerationElement, linkOutcomeToConsideration])
   }
 }
 
 //Function to Create activity nodes that are the results of the ouctomes generated
 function checkForActivities(outcome, arr, parentNode){
-  
+  var portName = ['NT1', "PG1", "AC1"]
+  const embedButton = buttonView("Activities", parentNode, portName)
   for (const key in outcome){
     if(key.startsWith('sunyrdaf')){
       if(key == "sunyrdaf:resultsFrom"){
         if(Array.isArray(outcome)){ //Conditions to create multiple activities
           outcome[key].forEach(activity =>{
-            const out = createActivities(activity['@id'], activity['name'])
-            const linkTopicToOutcome = makeLink(parentNode, out)
-            out.prop('name/first', "Activities")
-            linkTopicToOutcome.labels([{attrs:{text:{text: "Activities"}}}])
+            const activityElement = createActivities(activity['@id'], activity['name'])
+            const linkOutcomeToActivity = makeLink(parentNode, activityElement)
+            activityElement.prop('name/first', "Activities")
+            linkOutcomeToActivity.labels([{attrs:{text:{text: "Activities"}}}])
             //arr.push([out])
-            arr.push([out, linkTopicToOutcome])
+            arr.push([activityElement, linkOutcomeToActivity])
           })
         }else{// Condition to create a single activity
           if(outcome[key]['name'] == undefined){
             duplicateFrame.forEach(nodes =>{
               if(nodes['@id'] == outcome[key]){
-                const out = createActivities(nodes['@id'], nodes['name'])
-                const linkTopicToOutcome = makeLink(parentNode, out)
-                out.prop('name/first', "Activities")
-                linkTopicToOutcome.labels([{attrs:{text:{text: "Activities"}}}])
+                const activityElement = createActivities(nodes['@id'], nodes['name'])
+                const linkOutcomeToActivity = makeLink(parentNode, activityElement)
+                activityElement.prop('name/first', "Activities")
+                linkOutcomeToActivity.labels([{attrs:{text:{text: "Activities"}}}])
                 //arr.push([out])
-                arr.push([out, linkTopicToOutcome])
+                arr.push([activityElement, linkOutcomeToActivity])
               }
             })
           }else{
-            const out = createActivities(outcome[key]['@id'], outcome[key]['name'])
-            const linkTopicToOutcome = makeLink(parentNode, out)
-            out.prop('name/first', "Activities")
-            linkTopicToOutcome.labels([{attrs:{text:{text: "Activities"}}}])
-            //arr.push([out])
-            arr.push([out, linkTopicToOutcome])
+            const activityElement = createActivities(outcome[key]['@id'], outcome[key]['name'])
+            const linkOutcomeToActivity = makeLink(parentNode, activityElement)
+            activityElement.prop('name/first', "Activities")
+            linkOutcomeToActivity.labels([{attrs:{text:{text: "Activities"}}}])
+            arr.push([activityElement, linkOutcomeToActivity])
           }
         }
+      }else if(key == "sunyrdaf:includes"){
+        checkForConsiderations(outcome[key], arr, parentNode)
       }
     }
   }

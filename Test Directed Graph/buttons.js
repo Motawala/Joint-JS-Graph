@@ -64,7 +64,7 @@ function radioButtonView(portName, element, tools){
   var port1 = createPort(portName[0], 'out');
   var port2 = createPort(portName[1],'out');
   var port3 = createPort(portName[2], 'out');
-  //var tools = []
+  
   element.addPort(port1)
   element.addPort(port2)
   element.addPort(port3)
@@ -77,33 +77,37 @@ function radioButtonView(portName, element, tools){
   BUTTONS VIEW: Adds the button to the tools View 
 */
 function buttonView(portName, element, portNameList){
+  
   var port = createPort(portName, 'out', 'Port 3');
-  var subTopicPort = createPort("RDaF Subtopic", "out", "Port 4")
-    // Add custom tool buttons for each port
-    var tool = [];
-    element.addPort(port);
-    element.addPort(subTopicPort)
-    var subTopicButton = createSubTopicButton(subTopicPort)
-    //Create the Button
-    if(portName == "Considerations"){
-      tool.push(createConsiderationButton(port))
-    }else if(portName == "Activities"){
-      tool.push(subTopicButton)
-      tool.push(createButton(port))
-      //Push the circle buttons to the same list
-      tool.push(radioButtonView(portNameList, element, tool))
-    }else{
-      tool.push(createButton(port))
-    }
-    //Add the element to the graph
-    graph.addCells(element);
-    //Create the tools view
-    toolsView = new joint.dia.ToolsView({ tools: tool});
-    //Create an element view
-    var elementView = element.findView(paper)
-    //Embed tthe tools view in to the element view
-    elementView.addTools(toolsView);
+  var considerationPort = createPort("Considerations", "out", "Port 4")
+  // Add custom tool buttons for each port
+  var tool = [];
+  element.addPort(port);
+  element.addPort(considerationPort)
+  //Create the Button
+  if(portName == "Considerations"){
+    tool.push(createConsiderationButton(port))
+  }if(portName == "Activities"){
+    tool.push(createConsiderationButton(considerationPort))
+    tool.push(createButton(port))
+    //Push the circle buttons to the same list
+    tool.push(radioButtonView(portNameList, element, tool))
+  }
+  if(portName == "Outcomes"){
+    tool.push(createButton(port))
+  }
+  //Add the element to the graph
+  graph.addCells(element);
+  //Create the tools view
+  toolsView = new joint.dia.ToolsView({ tools: tool});
+  //Create an element view
+  var elementView = element.findView(paper)
+  //Embed tthe tools view in to the element view
+  elementView.addTools(toolsView);
+
+  
 }
+
 
 
 /*
@@ -191,7 +195,6 @@ function createSubTopicButton(port, pos){
     offset: { x: -8, y: -8 },
     action: function(evt,elementView) {
       //Event Handle for the button.
-      console.log(`${port.id}`)
       toggelButton(this.model, `${port.id}`)
     },
   });
@@ -246,4 +249,6 @@ function createButton(port,pos) {
     });
     return button;
 }
+
+
   
