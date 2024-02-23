@@ -77,25 +77,37 @@ function closeTheRest(element){
     the above close the Rest to close the rest of the tree
 */
 function toggelButton(node, typeOfPort){
-    
     var shouldHide = node.get('collapsed');
-    
     node.set('collapsed', !shouldHide);
     if(typeOfPort == "Outcomes"){
         defaultEvent(node, typeOfPort)
-        
     }
     if(typeOfPort == "Considerations"){
-        
         defaultEvent(node, typeOfPort)
     }
     if(typeOfPort == "Activities"){
         defaultEvent(node, typeOfPort)
     }
-    if(typeOfPort == "RDaF Subtopic"){
-        
-        const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
-        defaultEvent(node, typeOfPort)
+}
+
+//Function to show the subtopic when the pointer hover over the subtopic button 
+function showSubtopic(node, typeOfPort){
+    const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
+    console.log(node)
+    if(OutboundLinks[0].getTargetElement().prop('name/first') == typeOfPort){
+        OutboundLinks[0].getTargetElement().set('hidden', false)
+        OutboundLinks[0].getTargetElement().set('collapse', true)
+        OutboundLinks[0].set('hidden', true)
+    }
+}
+
+//Function to hide the subtopic when the pointer hover over the subtopic button 
+function hideSubtopic(node, typeOfPort){
+    const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
+    if(OutboundLinks[0].getTargetElement().prop('name/first') == typeOfPort){
+        OutboundLinks[0].getTargetElement().set('hidden', true)
+        OutboundLinks[0].getTargetElement().set('collapse', false)
+        OutboundLinks[0].set('hidden', true)
     }
 }
 
@@ -116,7 +128,6 @@ function radioButtonEvents(elementView, port){
             considerationButton.style.visibility = "hidden"
             circleElement.setAttribute('fill', 'Green')
         }
-        
         if(circleElement.id.startsWith('P')){
             //When clicked on In Progress button, show the activity button
             activityButton.style.visibility = "visible"
@@ -138,15 +149,11 @@ function radioButtonEvents(elementView, port){
 
 
 function defaultEvent(node, typeOfPort){
-    
     if(node.get('collapsed')){
         const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
         if(Array.isArray(OutboundLinks)){
             OutboundLinks.forEach(links =>{
                 if(links.getTargetElement().prop('name/first') == typeOfPort){
-                    if(typeOfPort == "Considerations"){
-                        console.log('subbhbf')
-                    }
                     links.getTargetElement().set('hidden', false)
                     links.getTargetElement().set('collapsed', true)
                     //Make the links visible
@@ -173,6 +180,7 @@ function defaultEvent(node, typeOfPort){
                 links.getTargetElement().set('collapsed', false)
                 //Make the links visible
                 links.set('hidden', true)
+                //graph.getConnectedLinks(links.getTargetElement(), {inbound:true}).set('hidden', true)
                 closeTheRest(links.getTargetElement())
                 if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView

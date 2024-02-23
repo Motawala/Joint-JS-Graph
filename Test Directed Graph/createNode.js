@@ -5,18 +5,29 @@ const PORT_GAP = 20;
 
 //Thing to consider -> later
 joint.routers.randomWalk = function(vertices, args, linkView) {
-    var NUM_BOUNCES = args.numBounces || 1;
-    vertices = joint.util.toArray(vertices).map(g.Point);
-    for (var i = 0; i < NUM_BOUNCES; i++) {
+    var paper = options.paper;
+    var padding = 20; // Padding between elements
+    
+    // Iterate through the vertices and adjust positions to be closer together
+    _.each(vertices, function(vertex, index) {
+        if (index > 0) {
+            var prevVertex = vertices[index - 1];
+            var distance = Math.abs(vertex.x - prevVertex.x);
+            
+            // If the distance between elements is too large, move them closer
+            if (distance > padding) {
+                if (vertex.x > prevVertex.x) {
+                    vertex.x = prevVertex.x + padding;
+                } else {
+                    vertex.x = prevVertex.x - padding;
+                }
+            }
+        }
+    });
 
-        var sourceCorner = linkView.sourceBBox.center();
-        var targetCorner = linkView.targetBBox.center();
-
-        var randomPoint = g.Point.random(sourceCorner.x, targetCorner.x, sourceCorner.y, targetCorner.y);
-        vertices.push(randomPoint)
-    }
-
-    return vertices;
+    // Call the parent route method to finalize routing
+    return joint.routers.normal.prototype.route.call(this, vertices, options);
+  
 }
 
 
@@ -34,8 +45,6 @@ function makeLink(from,to) {
      link.router('metro',{
         margin:0,
         perpendicular:true,
-        step:10,
-        padding:0 | 'bottom',
         startDirections: ['right'],
         endDirections: ['left'],
         //excludeEnds: ['source'],
@@ -202,6 +211,52 @@ function createTopics(id, name){
  }
 
 
+
+ function createSubTopics(id, name){
+  if(typeof name == 'string'){
+    var textWidth = name.length * 10
+  }else{
+    var textWidth = 150
+  }
+  const width = Math.max(textWidth, 200); // Ensure a minimum width to accommodate shorter text
+  
+
+  const node =  new joint.shapes.standard.Rectangle({
+      id: id,
+      //position: {
+      //  x: 250,
+      //  y: 500
+      //},
+      size: {
+        width: width,
+        height: 65
+      },
+      attrs: {
+        label: {
+          //fontWeight: "bold",
+          fontSize: 15,
+          fontFamily: "sans-serif",
+          fill: "black",
+          stroke: "#333333",
+          paintOrder: "stroke",
+          text: name,
+         },
+         body: {
+          strokeWidth: 2,
+          fill: "white",
+          cursor: "grab"
+        },
+      },
+      ports:{
+        id: "RDaF Subtopic",
+        items: []
+      }
+    });
+    node.set('hidden', true);
+    return node
+ }
+
+
  function createOutcomes(id, name){
     const textWidth = name.length * 10; // Approximate width based on font size and average character width
     const width = Math.max(textWidth, 100); // Ensure a minimum width to accommodate shorter text
@@ -238,7 +293,7 @@ function createTopics(id, name){
         }
       });
       node.set('hidden', true);
-      return node
+      return node;
 }
 
 function createActivities(id, name){
@@ -272,7 +327,7 @@ function createActivities(id, name){
         },
       },
       ports:{
-        id: "Considerations",
+        id: "Activities",
         items: []
       }
     });

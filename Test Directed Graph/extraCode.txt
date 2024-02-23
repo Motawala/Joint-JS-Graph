@@ -7,3 +7,24 @@ else{
     linkTopicToOutcome.labels([{attrs:{text:{text: "Considerations"}}}])
     arr.push([out, linkTopicToOutcome])
   }
+
+
+
+  function checkForSubTopics(outcome, arr, parentNode){
+  if(outcome['description'] == undefined){
+    duplicateFrame.forEach(nodes =>{
+      if(nodes['@id'] == outcome){
+        
+        const subtopic = linkNodes(nodes, arr, parentNode, "Subtopic")
+        return subtopic;
+      }
+    })
+  }else{
+    console.log(outcome['name'])
+    const subtopic = linkNodes(outcome, arr, parentNode, "Subtopic")
+    return subtopic;
+  }
+  const subtopic = linkNodes(outcome, arr, parentNode, "Subtopic")
+  return subtopic;
+  
+  

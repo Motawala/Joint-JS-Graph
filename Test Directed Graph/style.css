@@ -1,5 +1,6 @@
 body{
     overflow: auto;
+    position:absolute;
   }
   
   :root{
@@ -43,4 +44,18 @@ body{
   
   .paper-container{
     overflow: auto;
+  }
+
+  .g.joint-tool.joint-theme-default rect {
+    fill: #ffbf80; /* Button background color */
+    stroke: black; /* Border color */
+    stroke-width: 2; /* Border width */
+    cursor: pointer; /* Cursor type */
+  }
+
+  .g.joint-tool.joint-theme-default rect:hover {
+    fill: grey; /* Button background color */
+    stroke: black; /* Border color */
+    stroke-width: 2; /* Border width */
+    cursor: pointer; /* Cursor type */
   }
