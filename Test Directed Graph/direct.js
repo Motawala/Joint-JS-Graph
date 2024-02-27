@@ -151,23 +151,54 @@ function checkOutcomes(topic, arr, parentNode){
   
 }
 
+function createTextBlock(element, node, parentNode){
+  var nodeCellView = paper.findViewByModel(parentNode)
+  var bbox = nodeCellView.model.getBBox();
+  var paperRect1 = paper.localToPaperRect(bbox);
+  // Draw an HTML rectangle above the element.
+  var div = document.createElement('div');
+  nodeCellView.el.style.position = "relative"
+  div.style.position = 'absolute';
+  div.style.background = 'white';
+  div.textContent = node['description']
+  var length = element * 2
+  div.style.width = ((paperRect1.width)/2) + 'px';
+  div.style.height = (length) + 'px';
+  div.style.border = "1px solid black";
+  div.style.fontWeight = "bold"
+  div.style.fontSize = "20px"
+  div.id = element.id
+  div.style.fontFamily = "Cambria"
+  div.style.lineBreak = 0.5
+  div.style.visibility = "hidden"
+  div.style.backgroundColor = "lightgrey"
+  paper.el.appendChild(div);
+}
+
 //Function to create considerations nodes
 function checkForConsiderations(outcome, arr, parentNode){
   if(Array.isArray(outcome)){
     //Condition to handle topics that includes multiple considerations
-    outcome.forEach(considerations =>{
-      if(considerations['name'] == undefined){
-        duplicateFrame.forEach(nodes =>{
-          if(nodes['@id'] == considerations){
-            const considerationElement = linkNodes(nodes, arr, parentNode, "Considerations")
+    for (const considerations of outcome) {
+      if (considerations['name'] == undefined) {
+          for (const nodes of duplicateFrame) {
+              if (nodes['@id'] == considerations) {
+                  const considerationElement = linkNodes(nodes, arr, parentNode, "Considerations");
+                  createTextBlock(considerationElement, nodes, parentNode)
+                  return considerationElement;
+              }
           }
-        })
-      }else{
-        const considerationElement = linkNodes(considerations, arr, parentNode, "Considerations")
+      } else {
+          const considerationElement = linkNodes(considerations, arr, parentNode, "Considerations");
+          createTextBlock(considerationElement, considerations, parentNode)
+          return considerationElement;
       }
-    })
+  }
+  
   }else{ //Condition to handle topics that includes a single considerations
     const considerationElement = linkNodes(outcome, arr, parentNode, "Considerations")
+    createTextBlock(considerationElement, outcome, parentNode)
+    return considerationElement
   }
 }
 
@@ -194,63 +225,58 @@ function checkForActivities(outcome, arr, parentNode){
           }
         }
       }else if(key == "sunyrdaf:includes"){
-        checkForConsiderations(outcome[key], arr, parentNode)
+        const consideration = checkForConsiderations(outcome[key], arr, parentNode)
+        var portName = ['Definition']
+        const embedButton = buttonView("Definition", consideration, portName)
       }else if(key == "sunyrdaf:extends"){
-        checkForSubTopics(outcome[key], arr, parentNode);
-        
+        //Instead Of creating an element and a link for the subtopic, we have just used 
+        //the Name, description and the catalog number to define the subtopic into a textblock
+        var subTopic = checkForSubTopics(outcome[key], arr, parentNode);
+        if(subTopic != undefined){
+          //This creates the si
+          var nodeCellView = paper.findViewByModel(parentNode)
+          var bbox = nodeCellView.model.getBBox();
+          var paperRect1 = paper.localToPaperRect(bbox);
+          // Draw an HTML rectangle above the element.
+          var div = document.createElement('div');
+          nodeCellView.el.style.position = "relative"
+          div.style.position = 'absolute';
+          div.style.background = 'white';
+          div.textContent = subTopic
+          var length = subTopic * 2
+          div.style.width = ((paperRect1.width)/2) + 'px';
+          div.style.height = (length) + 'px';
+          div.style.border = "1px solid black";
+          div.style.fontWeight = "bold"
+          div.style.fontSize = "20px"
+          div.id = parentNode.id
+          div.style.fontFamily = "Cambria"
+          div.style.lineBreak = 0.5
+          div.style.visibility = "hidden"
+          paper.el.appendChild(div);
+          
+        }
       }
     }
   }
 }
-
 //This function creates the subtopic
 /*
   For now the subtopics are linked to its paretnode because if not linked it distracts the directed graph.
 */
 function checkForSubTopics(outcome, arr, parentNode){
-  if(outcome['name'] && outcome['description']){
-    var desc = outcome['name'] +": " + outcome['description']
-    const subTopic = createSubTopics(outcome['@id'], desc)
-    subTopic.prop('name/first', "RDaF Subtopic")
-    const link = makeLink(parentNode, subTopic)
-    graph.addCells([link,subTopic])
+  if(outcome['name'] || outcome['description']){
+    const subTopic = linkNodes(outcome, arr, parentNode, "Subtopic")
     return subTopic;
-  }else if(outcome['name']){
-    duplicateFrame.forEach(nodes =>{
-      if(nodes['@id'] == outcome['@id']){
+  }else {
+    for (const nodes of duplicateFrame) {
+      if (nodes['@id'] == outcome) {
         outcome = nodes
-        var desc = outcome['name'] 
-        const subTopic = createSubTopics(outcome['@id'], desc)
-        const link = makeLink(parentNode, subTopic)
-        subTopic.prop('name/first', "RDaF Subtopic")
-        graph.addCells([link, subTopic])
+        const subTopic = linkNodes(outcome, arr, parentNode, "Subtopic")
         return subTopic;
       }
-    })
-  }else if(outcome['description']){
-    duplicateFrame.forEach(nodes =>{
-      if(nodes['@id'] == outcome['@id']){
-        var desc = nodes['description']
-        const subTopic = createSubTopics(nodes['@id'], desc)
-        const link = makeLink(parentNode, subTopic)
-        subTopic.prop('name/first', "RDaF Subtopic")
-        graph.addCells([link, subTopic])
-        return subTopic;
-      }
-    })
-  }else{
-    duplicateFrame.forEach(nodes =>{
-      if(nodes['@id'] == outcome['@id']){
-        var desc = nodes['description']
-        const subTopic = createSubTopics(nodes['@id'], desc)
-        const link = makeLink(parentNode, subTopic)
-        subTopic.prop('name/first', "RDaF Subtopic")
-        graph.addCells([link, subTopic])
-        return subTopic;
-      }
-    })
+    }
   }
-  
 }
 
 
@@ -281,7 +307,6 @@ function linkNodes(childNode, arr, parentNode, typeOfNode){
     const linkOutcomeToActivity = makeLink(parentNode, activityElement)
     activityElement.prop('name/first', "Activities")
     linkOutcomeToActivity.labels([{attrs:{text:{text: "Activities"}}}])
-    //arr.push([out])
     arr.push([activityElement, linkOutcomeToActivity])
     return activityElement;
   }
@@ -293,16 +318,26 @@ function linkNodes(childNode, arr, parentNode, typeOfNode){
     arr.push([considerationElement, linkOutcomeToConsideration])
     return considerationElement;
   }
+  if(typeOfNode == "Subtopic"){
+    var id = childNode['@id'];
+    var parts = id.split("/");
+    var category = parts[parts.length - 1];
+    let description;
+    if(childNode['name'] == undefined){
+      description = category + ": " + childNode['description'] 
+    }else if(childNode['description'] == undefined){
+      description = category + ": " + childNode['name'] 
+    }else{
+      description = category + ": " + childNode['name'] + ": " + childNode['description'] 
+    }
+    return description
+  }
 }
 
 
 function doLayout() {
   // Apply layout using DirectedGraph plugin
   layout = joint.layout.DirectedGraph.layout(graph, {
-	  // commenting these out had no effect - maybe they are overridden by the router algorithm?
-//      setLinkVertices: false, // Optional: Prevent the plugin from setting link vertices
-//      nodeSep: 50,
- //     edgeSep: 80,
       rankDir: "LR",
       ranker: 'tight-tree',
       resizeClusters: false

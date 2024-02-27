@@ -44,7 +44,6 @@ function makeLink(from,to) {
      // with them all to see which works best
      link.router('metro',{
         margin:0,
-        perpendicular:true,
         startDirections: ['right'],
         endDirections: ['left'],
         //excludeEnds: ['source'],
@@ -308,7 +307,7 @@ function createActivities(id, name){
       //},
       size: {
         width: width,
-        height: 65
+        height: 200
       },
       attrs: {
         label: {

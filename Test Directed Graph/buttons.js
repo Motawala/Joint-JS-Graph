@@ -76,7 +76,7 @@ function radioButtonView(portName, element, tools){
 /*
   BUTTONS VIEW: Adds the button to the tools View 
 */
-function buttonView(portName, element, portNameList){
+function buttonView(portName, element, portNameList, parentNode){
   
   var port = createPort(portName, 'out', 'Port 3');
   var considerationPort = createPort("Considerations", "out", "Port 4")
@@ -99,16 +99,21 @@ function buttonView(portName, element, portNameList){
   if(portName == "Outcomes"){
     tool.push(createButton(port))
   }
+  if(portName == "Definition"){
+    tool.push(createDefinitionButton(port))
+  }
+  createElementView(element, tool)
+  
+}
+
+function createElementView(element, tool){
   //Add the element to the graph
   graph.addCells(element);
-  //Create the tools view
   toolsView = new joint.dia.ToolsView({ tools: tool});
   //Create an element view
   var elementView = element.findView(paper)
   //Embed tthe tools view in to the element view
   elementView.addTools(toolsView);
-
-  
 }
 
 
@@ -198,7 +203,6 @@ function createSubTopicButton(port, pos){
     offset: { x: -8, y: -8 },
     action: function(evt,elementView) {
       //Event Handle for the button.
-      //toggelButton(this.model, `${port.id}`)
     },
   });
   return button;
@@ -206,29 +210,71 @@ function createSubTopicButton(port, pos){
 
 //In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
 //Show the subtopic when the enters the cell view of the subtopic button
-paper.on('cell:mouseenter', function(cellView, id) {
-  if(cellView._toolsView.tools[5]){
-    const subtopicButton = cellView._toolsView.tools[5].$el[0].querySelector('rect')
-    subtopicButton.addEventListener('mouseenter', function() {
-      // Your mouseover event handling code here
-      showSubtopic(cellView.model, "RDaF Subtopic")
+paper.on('cell:mouseenter', function(cellView) {
+  try {
+    //From the element view look for the element tools
+    var toolsArray = cellView._toolsView.tools
+    toolsArray.forEach(element => {
+      if (element.childNodes && element.childNodes.button) {
+        if(element.childNodes.button.id == "RDaF Subtopic"){
+          const subtopicButton = element.$el[0]
+          subtopicButton.addEventListener('mouseenter', function() {
+              // Your mouseover event handling code here
+            var bbox = cellView.model.getBBox();
+            var paperRect1 = paper.localToPaperRect(bbox);
+            // Set the position of the element according to the pointer and make it visible
+            var testFind = document.getElementById(cellView.model.id)
+            testFind.style.left = ((paperRect1.x) + 10) + 'px';
+            testFind.style.top = ((paperRect1.y) + 55) + 'px';
+            testFind.style.visibility = "visible"
+          });
+        }if(element.childNodes.button.id == "Definition"){
+          var bbox = cellView.model.getBBox();
+          var paperRect1 = paper.localToPaperRect(bbox);
+          // Set the position of the element according to the pointer and make it visible
+          var testFind = document.getElementById(cellView.model.id)
+          testFind.style.left = ((paperRect1.x) + 10) + 'px';
+          testFind.style.top = ((paperRect1.y) + 55) + 'px';
+          testFind.style.visibility = "visible"
+          
+        }
+      }else {
+        console.log();
+      }
     });
-  }else{
-    console.log()
+  } catch (error) {
+    console.error();
   }
-})
+});
 
 //In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
 //Hide the subtopic when the mouse pointer leaves the button
-paper.on('cell:mouseleave', function(cellView, id) {
-  if(cellView._toolsView.tools[5]){
-    const subtopicButton = cellView._toolsView.tools[5].$el[0].querySelector('rect')
-    subtopicButton.addEventListener('mouseleave', function() {
-      // Your mouseover event handling code here
-      hideSubtopic(cellView.model, "RDaF Subtopic")
+paper.on('cell:mouseleave', function(cellView) {
+  try {
+    //From the element View look for the element tools
+    var toolsArray = cellView._toolsView.tools
+    toolsArray.forEach(element => {
+      if (element.childNodes && element.childNodes.button) {
+        //Look for any events on subtopic button
+        if(element.childNodes.button.id == "RDaF Subtopic"){
+          const subtopicButton = element.$el[0]
+          subtopicButton.addEventListener('mouseleave', function() {
+            // Set the position of the element according to the pointer and make it visible
+            var testFind = document.getElementById(cellView.model.id)
+            testFind.style.visibility = "hidden"
+          });
+        }if(element.childNodes.button.id == "Definition"){
+          // Set the position of the element according to the pointer and make it visible
+          var testFind = document.getElementById(cellView.model.id)
+          testFind.style.visibility = "hidden"
+          
+        }
+      }else {
+        console.log();
+      }
     });
-  }else{
-    console.log()
+  } catch (error) {
+    console.error();
   }
 })
 
@@ -282,6 +328,51 @@ function createButton(port,pos) {
       },
     });
     return button;
+}
+
+
+function createDefinitionButton(port,pos) {
+  var button  = new joint.elementTools.Button({
+    markup: [
+      {
+        tagName: 'rect',
+        selector: 'button',
+        attributes: {
+            'id': port.id,
+            'width': 120,
+            'height': 20,
+            'rx': 10, // Border radius
+            'ry': 10, // Border radius
+            'fill': 'black', // Button background color
+            'stroke': 'black', // Button border color
+            'stroke-width': 2, // Button border width
+            'cursor': 'pointer'
+        }
+      },
+        {
+          tagName: 'text',
+          selector: 'text',
+          textContent: port.id, // Text displayed on the button
+          attributes: {
+            'fill': 'black', // Text color
+            'font-size': '15px',
+            'font-family': 'Arial',
+            'text-anchor': 'middle',
+            'fill': 'white',
+            'x':60,
+            'y': 15, // Adjust text position
+            'cursor': 'pointer'
+        }
+      }
+    ],
+    x: "90%", // Button position X
+    y: "70%", // Button position Y
+    offset: { x: -8, y: -8 },
+    action: function(evt,elementView) {
+      //Event Handler for the button.
+    },
+  });
+  return button;
 }
 
 

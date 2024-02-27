@@ -93,7 +93,6 @@ function toggelButton(node, typeOfPort){
 //Function to show the subtopic when the pointer hover over the subtopic button 
 function showSubtopic(node, typeOfPort){
     const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
-    console.log(node)
     if(OutboundLinks[0].getTargetElement().prop('name/first') == typeOfPort){
         OutboundLinks[0].getTargetElement().set('hidden', false)
         OutboundLinks[0].getTargetElement().set('collapse', true)
@@ -158,15 +157,29 @@ function defaultEvent(node, typeOfPort){
                     links.getTargetElement().set('collapsed', true)
                     //Make the links visible
                     links.set('hidden', false)
+                    const orphanLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
+                    orphanLinks.forEach(orphans =>{
+                       if(orphans.get('hidden') == true){
+                            orphans.set('hidden', true)
+                       }
+                    })
                     if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
-                        var ActivitiesButton = links.getTargetElement().findView(paper)
-                        if(ActivitiesButton.hasTools()){
+                        var elementView = links.getTargetElement().findView(paper)
+                        if(elementView.hasTools()){
                             //Query's for the Activity Button on the and hides it
-                            Actbutton = ActivitiesButton._toolsView.tools[1].$el[0]
-                            ConsiderationButtton = ActivitiesButton._toolsView.tools[0].$el[0]
+                            const Actbutton = elementView._toolsView.tools[1].$el[0]
+                            const ConsiderationButtton = elementView._toolsView.tools[0].$el[0]
                             Actbutton.style.visibility = "hidden"
                             ConsiderationButtton.style.visibility = "hidden"
+                            const circleElement = elementView._toolsView.$el[0].querySelectorAll('circle')
+                            //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing 
+                            circleElement.forEach(circle =>{
+                                if(circle.getAttribute('fill') == "Red" || circle.getAttribute('fill') == "Orange"){
+                                    Actbutton.style.visibility = "visible"
+                                    ConsiderationButtton.style.visibility = "visible"
+                                }
+                            })
                         }
                     }
                 }
@@ -180,17 +193,31 @@ function defaultEvent(node, typeOfPort){
                 links.getTargetElement().set('collapsed', false)
                 //Make the links visible
                 links.set('hidden', true)
+                const inboundLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
+                inboundLinks.forEach(orphans =>{
+                    links.getTargetElement().set('hidden', true)
+                })
+                   
+                
                 //graph.getConnectedLinks(links.getTargetElement(), {inbound:true}).set('hidden', true)
                 closeTheRest(links.getTargetElement())
                 if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
-                    var ActivitiesButton = links.getTargetElement().findView(paper)
-                    if(ActivitiesButton.hasTools()){
+                    var elementView = links.getTargetElement().findView(paper)
+                    if(elementView.hasTools()){
                         //Query's for the Activity Button on the and hides it
-                        Actbutton = ActivitiesButton._toolsView.tools[1].$el[0]
-                        ConsiderationButtton = ActivitiesButton._toolsView.tools[0].$el[0]
+                        const Actbutton = elementView._toolsView.tools[1].$el[0]
+                        const ConsiderationButtton = elementView._toolsView.tools[0].$el[0]
                         Actbutton.style.visibility = "hidden"
                         ConsiderationButtton.style.visibility = "hidden"
+                        const circleElement = elementView._toolsView.$el[0].querySelectorAll('circle')
+                        //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing 
+                        circleElement.forEach(circle =>{
+                            if(circle.getAttribute('fill') == "Red" || circle.getAttribute('fill') == "Orange"){
+                                Actbutton.style.visibility = "visible"
+                                ConsiderationButtton.style.visibility = "visible"
+                            }
+                        })
                     }
                 }
             }
