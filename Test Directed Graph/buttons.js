@@ -1,5 +1,5 @@
 /*
-    CIRCLE BUTTON 
+    CIRCLE BUTTON
 */
 function radioButton(port, index, name){
     var button  = new joint.elementTools.Button({
@@ -56,7 +56,7 @@ var rect = new joint.shapes.standard.Rectangle({
     },
 });
 
-  
+
 //This function takes in a list of ports that are to be embeded into the element,
 //Make sure the port Ids of the ports are always different
 //Creates a set of 3 circle buttons that are required in the Activities
@@ -64,7 +64,7 @@ function radioButtonView(portName, element, tools){
   var port1 = createPort(portName[0], 'out');
   var port2 = createPort(portName[1],'out');
   var port3 = createPort(portName[2], 'out');
-  
+
   element.addPort(port1)
   element.addPort(port2)
   element.addPort(port3)
@@ -74,10 +74,10 @@ function radioButtonView(portName, element, tools){
 }
 
 /*
-  BUTTONS VIEW: Adds the button to the tools View 
+  BUTTONS VIEW: Adds the button to the tools View
 */
 function buttonView(portName, element, portNameList, parentNode){
-  
+
   var port = createPort(portName, 'out', 'Port 3');
   var considerationPort = createPort("Considerations", "out", "Port 4")
   var subTopicPort = createPort("RDaF Subtopic", 'out', 'Port 5')
@@ -103,7 +103,7 @@ function buttonView(portName, element, portNameList, parentNode){
     tool.push(createDefinitionButton(port))
   }
   createElementView(element, tool)
-  
+
 }
 
 function createElementView(element, tool){
@@ -208,76 +208,6 @@ function createSubTopicButton(port, pos){
   return button;
 }
 
-//In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
-//Show the subtopic when the enters the cell view of the subtopic button
-paper.on('cell:mouseenter', function(cellView) {
-  try {
-    //From the element view look for the element tools
-    var toolsArray = cellView._toolsView.tools
-    toolsArray.forEach(element => {
-      if (element.childNodes && element.childNodes.button) {
-        if(element.childNodes.button.id == "RDaF Subtopic"){
-          const subtopicButton = element.$el[0]
-          subtopicButton.addEventListener('mouseenter', function() {
-              // Your mouseover event handling code here
-            var bbox = cellView.model.getBBox();
-            var paperRect1 = paper.localToPaperRect(bbox);
-            // Set the position of the element according to the pointer and make it visible
-            var testFind = document.getElementById(cellView.model.id)
-            testFind.style.left = ((paperRect1.x) + 10) + 'px';
-            testFind.style.top = ((paperRect1.y) + 55) + 'px';
-            testFind.style.visibility = "visible"
-          });
-        }if(element.childNodes.button.id == "Definition"){
-          var bbox = cellView.model.getBBox();
-          var paperRect1 = paper.localToPaperRect(bbox);
-          // Set the position of the element according to the pointer and make it visible
-          var testFind = document.getElementById(cellView.model.id)
-          testFind.style.left = ((paperRect1.x) + 10) + 'px';
-          testFind.style.top = ((paperRect1.y) + 55) + 'px';
-          testFind.style.visibility = "visible"
-          
-        }
-      }else {
-        console.log();
-      }
-    });
-  } catch (error) {
-    console.error();
-  }
-});
-
-//In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
-//Hide the subtopic when the mouse pointer leaves the button
-paper.on('cell:mouseleave', function(cellView) {
-  try {
-    //From the element View look for the element tools
-    var toolsArray = cellView._toolsView.tools
-    toolsArray.forEach(element => {
-      if (element.childNodes && element.childNodes.button) {
-        //Look for any events on subtopic button
-        if(element.childNodes.button.id == "RDaF Subtopic"){
-          const subtopicButton = element.$el[0]
-          subtopicButton.addEventListener('mouseleave', function() {
-            // Set the position of the element according to the pointer and make it visible
-            var testFind = document.getElementById(cellView.model.id)
-            testFind.style.visibility = "hidden"
-          });
-        }if(element.childNodes.button.id == "Definition"){
-          // Set the position of the element according to the pointer and make it visible
-          var testFind = document.getElementById(cellView.model.id)
-          testFind.style.visibility = "hidden"
-          
-        }
-      }else {
-        console.log();
-      }
-    });
-  } catch (error) {
-    console.error();
-  }
-})
-
 
 
 
@@ -376,4 +306,3 @@ function createDefinitionButton(port,pos) {
 }
 
 
-  

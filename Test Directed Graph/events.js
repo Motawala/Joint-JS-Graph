@@ -36,7 +36,7 @@ function openBranch(child, shouldHide){
                 successor.set('hidden', true);
                 successor.set('collapsed', false);
             });
-        
+
         }
         //closeTheRest(element)
 	// I don't think I'm calling this correctly, or in the right
@@ -44,7 +44,7 @@ function openBranch(child, shouldHide){
 	// in theory it should help with recalculating the routes after
 	// things move
 	paper.findViewByModel(targetLink).requestConnectionUpdate();
-        //What I have implemented below works fine and is a good way to hide when we stop at one point in the tree, but I look into it and see if it helps 
+        //What I have implemented below works fine and is a good way to hide when we stop at one point in the tree, but I look into it and see if it helps
     })
 
 }
@@ -67,7 +67,7 @@ function closeTheRest(element){
         successor.set('hidden', true);
         successor.set('collapsed', false);
     });
-    
+
 }
 
 
@@ -90,7 +90,7 @@ function toggelButton(node, typeOfPort){
     }
 }
 
-//Function to show the subtopic when the pointer hover over the subtopic button 
+//Function to show the subtopic when the pointer hover over the subtopic button
 function showSubtopic(node, typeOfPort){
     const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
     if(OutboundLinks[0].getTargetElement().prop('name/first') == typeOfPort){
@@ -100,7 +100,7 @@ function showSubtopic(node, typeOfPort){
     }
 }
 
-//Function to hide the subtopic when the pointer hover over the subtopic button 
+//Function to hide the subtopic when the pointer hover over the subtopic button
 function hideSubtopic(node, typeOfPort){
     const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
     if(OutboundLinks[0].getTargetElement().prop('name/first') == typeOfPort){
@@ -159,9 +159,9 @@ function defaultEvent(node, typeOfPort){
                     links.set('hidden', false)
                     const orphanLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
                     orphanLinks.forEach(orphans =>{
-                       if(orphans.get('hidden') == true){
+                        if(orphans.get('hidden') == true){
                             orphans.set('hidden', true)
-                       }
+                        }
                     })
                     if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
@@ -173,7 +173,7 @@ function defaultEvent(node, typeOfPort){
                             Actbutton.style.visibility = "hidden"
                             ConsiderationButtton.style.visibility = "hidden"
                             const circleElement = elementView._toolsView.$el[0].querySelectorAll('circle')
-                            //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing 
+                            //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing
                             circleElement.forEach(circle =>{
                                 if(circle.getAttribute('fill') == "Red" || circle.getAttribute('fill') == "Orange"){
                                     Actbutton.style.visibility = "visible"
@@ -197,8 +197,6 @@ function defaultEvent(node, typeOfPort){
                 inboundLinks.forEach(orphans =>{
                     links.getTargetElement().set('hidden', true)
                 })
-                   
-                
                 //graph.getConnectedLinks(links.getTargetElement(), {inbound:true}).set('hidden', true)
                 closeTheRest(links.getTargetElement())
                 if(typeOfPort == "Outcomes"){
@@ -211,7 +209,7 @@ function defaultEvent(node, typeOfPort){
                         Actbutton.style.visibility = "hidden"
                         ConsiderationButtton.style.visibility = "hidden"
                         const circleElement = elementView._toolsView.$el[0].querySelectorAll('circle')
-                        //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing 
+                        //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing
                         circleElement.forEach(circle =>{
                             if(circle.getAttribute('fill') == "Red" || circle.getAttribute('fill') == "Orange"){
                                 Actbutton.style.visibility = "visible"
@@ -222,11 +220,84 @@ function defaultEvent(node, typeOfPort){
                 }
             }
         })
-            
+
     }
 }
 
 
 
 
-  
+
+
+//In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
+//Show the subtopic when the enters the cell view of the subtopic button
+paper.on('cell:mouseover', function(cellView) {
+    try {
+        console.log(cellView)
+      //From the element view look for the element tools
+        var toolsArray = cellView._toolsView.tools
+        toolsArray.forEach(element => {
+        if (element.childNodes && element.childNodes.button) {
+            if(element.childNodes.button.id == "RDaF Subtopic"){
+                const subtopicButton = element.$el[0]
+                subtopicButton.addEventListener('click', function() {
+                    console.log(cellView)
+                    // Your mouseover event handling code here
+                    var bbox = cellView.model.getBBox();
+                    var paperRect1 = paper.localToPaperRect(bbox);
+                    // Set the position of the element according to the pointer and make it visible
+                    var testFind = document.getElementById(cellView.model.id)
+                    console.log(testFind)
+                    testFind.style.left = ((paperRect1.x) + 10) + 'px';
+                    testFind.style.top = ((paperRect1.y) + 55) + 'px';
+                    testFind.style.visibility = "visible"
+                });
+            }
+            if(element.childNodes.button.id == "Definition"){
+                var bbox = cellView.model.getBBox();
+                var paperRect1 = paper.localToPaperRect(bbox);
+                // Set the position of the element according to the pointer and make it visible
+                var testFind = document.getElementById(cellView.model.id)
+                testFind.style.left = ((paperRect1.x) + 10) + 'px';
+                testFind.style.top = ((paperRect1.y) + 55) + 'px';
+                testFind.style.visibility = "visible"
+            }
+        }else {
+            console.log();
+        }
+        });
+    } catch (error) {
+        console.error();
+    }
+    });
+
+  //In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
+  //Hide the subtopic when the mouse pointer leaves the button
+    paper.on('cell:pointerclick', function(cellView) {
+    try {
+        //From the element View look for the element tools
+        var toolsArray = cellView._toolsView.tools
+        toolsArray.forEach(element => {
+            if (element.childNodes && element.childNodes.button) {
+            //Look for any events on subtopic button
+                if(element.childNodes.button.id == "RDaF Subtopic"){
+                const subtopicButton = element.$el[0]
+                subtopicButton.addEventListener('click', function() {
+                // Set the position of the element according to the pointer and make it visible
+                    var testFind = document.getElementById(cellView.model.id)
+                    testFind.style.visibility = "hidden"
+                });
+                }if(element.childNodes.button.id == "Definition"){
+                // Set the position of the element according to the pointer and make it visible
+                var testFind = document.getElementById(cellView.model.id)
+                testFind.style.visibility = "hidden"
+
+                }
+            }else {
+                console.log();
+            }
+        });
+    } catch (error) {
+        console.error();
+    }
+    })

@@ -20,7 +20,7 @@ const paper = new dia.Paper({
         return !view.model.get('hidden');
     }
 });
-        
+
 
 
 let Elements = [];
