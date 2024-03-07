@@ -140,6 +140,9 @@ function createTopics(id, name){
         width: width,
         height: 65
       },
+      NodeType:{
+        type: "Topics"
+      },
       attrs: {
         label: {
           fontWeight: "bold",

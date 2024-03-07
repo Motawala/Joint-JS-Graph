@@ -57,7 +57,8 @@ function closeTheRest(element){
     //This condition closes all the nodes when the user intereacts with the parentNode
     const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
     subElementsLinks.forEach(subLinks =>{
-            subLinks.set('hidden', true)
+        subLinks.set('hidden', true)
+        console.log(paper.findViewByModel(subLinks).requestConnectionUpdate())
     });
 
     const successrorCells = graph.getSubgraph([
@@ -157,12 +158,12 @@ function defaultEvent(node, typeOfPort){
                     links.getTargetElement().set('collapsed', true)
                     //Make the links visible
                     links.set('hidden', false)
-                    const orphanLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
+                    /*const orphanLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
                     orphanLinks.forEach(orphans =>{
                         if(orphans.get('hidden') == true){
                             orphans.set('hidden', true)
                         }
-                    })
+                    })*/
                     if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
                         var elementView = links.getTargetElement().findView(paper)
@@ -193,10 +194,11 @@ function defaultEvent(node, typeOfPort){
                 links.getTargetElement().set('collapsed', false)
                 //Make the links visible
                 links.set('hidden', true)
-                const inboundLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
+
+                /*const inboundLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
                 inboundLinks.forEach(orphans =>{
                     links.getTargetElement().set('hidden', true)
-                })
+                })*/
                 //graph.getConnectedLinks(links.getTargetElement(), {inbound:true}).set('hidden', true)
                 closeTheRest(links.getTargetElement())
                 if(typeOfPort == "Outcomes"){
@@ -233,21 +235,18 @@ function defaultEvent(node, typeOfPort){
 //Show the subtopic when the enters the cell view of the subtopic button
 paper.on('cell:mouseover', function(cellView) {
     try {
-        console.log(cellView)
       //From the element view look for the element tools
         var toolsArray = cellView._toolsView.tools
         toolsArray.forEach(element => {
         if (element.childNodes && element.childNodes.button) {
             if(element.childNodes.button.id == "RDaF Subtopic"){
                 const subtopicButton = element.$el[0]
-                subtopicButton.addEventListener('click', function() {
-                    console.log(cellView)
+                subtopicButton.addEventListener('mouseover', function() {
                     // Your mouseover event handling code here
                     var bbox = cellView.model.getBBox();
                     var paperRect1 = paper.localToPaperRect(bbox);
                     // Set the position of the element according to the pointer and make it visible
                     var testFind = document.getElementById(cellView.model.id)
-                    console.log(testFind)
                     testFind.style.left = ((paperRect1.x) + 10) + 'px';
                     testFind.style.top = ((paperRect1.y) + 55) + 'px';
                     testFind.style.visibility = "visible"
@@ -262,6 +261,8 @@ paper.on('cell:mouseover', function(cellView) {
                 testFind.style.top = ((paperRect1.y) + 55) + 'px';
                 testFind.style.visibility = "visible"
             }
+
+
         }else {
             console.log();
         }
@@ -273,8 +274,9 @@ paper.on('cell:mouseover', function(cellView) {
 
   //In order to see the effect of this function minimize the page to 25% because the subtopic elements are scattered througout the page
   //Hide the subtopic when the mouse pointer leaves the button
-    paper.on('cell:pointerclick', function(cellView) {
+    paper.on('cell:mouseleave', function(cellView) {
     try {
+
         //From the element View look for the element tools
         var toolsArray = cellView._toolsView.tools
         toolsArray.forEach(element => {
@@ -282,7 +284,7 @@ paper.on('cell:mouseover', function(cellView) {
             //Look for any events on subtopic button
                 if(element.childNodes.button.id == "RDaF Subtopic"){
                 const subtopicButton = element.$el[0]
-                subtopicButton.addEventListener('click', function() {
+                subtopicButton.addEventListener('mouseleave', function() {
                 // Set the position of the element according to the pointer and make it visible
                     var testFind = document.getElementById(cellView.model.id)
                     testFind.style.visibility = "hidden"
@@ -301,3 +303,22 @@ paper.on('cell:mouseover', function(cellView) {
         console.error();
     }
     })
+
+
+function hoverTextBlock(element, node, elementView){
+
+    // Draw an HTML rectangle above the element.
+    var div = document.createElement('div');
+
+    div.style.background = 'white';
+    div.textContent = node['description']
+
+    div.style.border = "1px solid black";
+    div.style.fontWeight = "bold"
+    div.style.fontSize = "20px"
+
+    div.style.fontFamily = "Cambria"
+    div.style.lineBreak = 0.5
+    div.style.visibility = "hidden"
+    paper.el.appendChild(div);
+}

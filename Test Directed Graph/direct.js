@@ -22,7 +22,7 @@ const paper = new dia.Paper({
     return !view.model.get('hidden');
   }
 });
-
+let duplicateFrame = []
 
 /*
   There is not button set on the Stages yet so this is an event handler for when clicked on any of the stages
@@ -39,33 +39,8 @@ paper.on('element:pointerclick', function(view, evt) {
     // how to get the layout to redraw everytime the way we want it to
 })
 
-paper.on('element:mouseenter', function(view, evt){
-  evt.stopPropagation();
-  if(view.model['id'] == "https://data.suny.edu/entities/oried/rdaf/nist/E" || view.model['id'] == "https://data.suny.edu/entities/oried/rdaf/nist/P" || view.model['id'] == "https://data.suny.edu/entities/oried/rdaf/nist/GA"){
-    var bbox = view.model.getBBox();
-    var paperRect1 = paper.localToPaperRect(bbox);
-    // Draw an HTML rectangle above the element.
-    var div = document.createElement('div');
-    //nodeCellView.el.style.position = "relative"
-    div.style.position = 'absolute';
-    div.style.background = 'white';
-    //div.textContent = node['description']
-    //var length = element * 2
-    div.style.width = ((paperRect1.x)/2) + 'px';
-    div.style.height = (paperRect1.y) + 'px';
-    div.style.border = "1px solid black";
-    div.style.fontWeight = "bold"
-    div.style.fontSize = "20px"
-    div.id = view.model.id
-    div.style.fontFamily = "Cambria"
-    div.style.lineBreak = 0.5
-    div.style.visibility = "hidden"
-    div.style.backgroundColor = "lightgrey"
-    paper.el.appendChild(div);
-    }
-})
 
-let duplicateFrame = []
+
 function buildTheGraph(){
   var Elements = []
     fetch('graph.jsonld')
@@ -110,7 +85,7 @@ function buildTheGraph(){
       frameArray.forEach(node =>{
             if(node['additionalType'] == "RdAF Stage"){
               var stage = linkNodes(node, Elements, "", "Stages")
-              //createTextBlock(stage, node, stage)
+              console.log(stage.isElement())
               topic = node['sunyrdaf:includes']
               if(Array.isArray(topic)){
                 topic.forEach(topics =>{
@@ -118,6 +93,7 @@ function buildTheGraph(){
                   if(topics){
                     //Creates the topic
                     var topicElement = linkNodes(topics, Elements, stage, "Topics")
+                    //createTextBlock(topicElement, node, stage)
                     if(topics["sunyrdaf:includes"]){
                       //Creates the consideration button if a topic includes consideration
                       var port3 = createPort('Considerations', 'out');
@@ -178,7 +154,7 @@ function checkOutcomes(topic, arr, parentNode){
 }
 
 function createTextBlock(element, node, parentNode){
-  var nodeCellView = paper.findViewByModel(parentNode || node)
+  nodeCellView = paper.findViewByModel(parentNode)
   var bbox = nodeCellView.model.getBBox();
   var paperRect1 = paper.localToPaperRect(bbox);
   // Draw an HTML rectangle above the element.
@@ -222,9 +198,19 @@ function checkForConsiderations(outcome, arr, parentNode){
   }
 
   }else{ //Condition to handle topics that includes a single considerations
-    const considerationElement = linkNodes(outcome, arr, parentNode, "Considerations")
-    createTextBlock(considerationElement, outcome, parentNode)
-    return considerationElement
+    if(outcome['name'] == undefined){
+      for (const nodes of duplicateFrame) {
+          if (nodes['@id'] == outcome) {
+              const considerationElement = linkNodes(nodes, arr, parentNode, "Considerations");
+              createTextBlock(considerationElement, nodes, parentNode)
+              return considerationElement;
+          }
+      }
+    }else{
+      const considerationElement = linkNodes(outcome, arr, parentNode, "Considerations")
+      createTextBlock(considerationElement, outcome, parentNode)
+      return considerationElement
+    }
   }
 }
 
@@ -310,6 +296,7 @@ function checkForSubTopics(outcome, arr, parentNode){
 function linkNodes(childNode, arr, parentNode, typeOfNode){
   if(typeOfNode == "Stages"){
     var stage = createStage(childNode['@id'], childNode['name'])
+    stage.prop('name/first', "Stages")
     setPorts(stage, ['Topics']);
     arr.push([stage])
     return stage;
@@ -337,9 +324,6 @@ function linkNodes(childNode, arr, parentNode, typeOfNode){
     return activityElement;
   }
   if(typeOfNode == "Considerations"){
-    if(childNode['name'] == undefined){
-      console.log(childNode)
-    }
     const considerationElement = createConsiderations(childNode['@id'], childNode['name'])
     const linkOutcomeToConsideration = makeLink(parentNode, considerationElement)
     considerationElement.prop('name/first', "Considerations")
