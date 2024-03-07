@@ -13,6 +13,11 @@ function makeLink(from,to) {
         '.connection': { stroke: 'red', 'stroke-dasharray': '5,5' }
        }
      });
+     // see https://resources.jointjs.com/docs/jointjs/v3.7/joint.html#routers
+     // I haven't tried the other algorithms but it might be worth experimenting
+     // with them all to see which works best
+     link.router('manhattan');
+     link.connector('jumpover');
      link.set('hidden', true);
       return link
  }
@@ -97,10 +102,10 @@ function createStage(id, name){
 function createTopics(id, name){
     const node = new joint.shapes.standard.Rectangle({
         id: id,
-        position: {
-          x: 250,
-          y: 500
-        },
+        //position: {
+        //  x: 250,
+        //  y: 500
+        //},
         size: {
           width: '250',
           height: 45
@@ -157,8 +162,8 @@ function createTopics(id, name){
                   fontFamily: "sans-serif"
                 },
               },
-              size: { width: PORT_WIDTH, height: PORT_HEIGHT },
-              position: "absolute"
+              size: { width: PORT_WIDTH, height: PORT_HEIGHT }
+              //position: "absolute"
             },
           },
           items: []
@@ -172,7 +177,7 @@ function createTopics(id, name){
 
     return new joint.shapes.standard.Rectangle({
         id: id,
-        position: { x:100, y: 50 },
+        //position: { x:100, y: 50 },
         size: { width: 100, height: 40 },
         attrs: {
             rect: { fill: 'lightblue', stroke: 'blue', 'stroke-width': 2 },
@@ -201,7 +206,7 @@ function createTopics(id, name){
 
     return new joint.shapes.standard.Rectangle({
         id: id,
-        position: { x:100, y: 50 },
+        //position: { x:100, y: 50 },
         size: { width: 100, height: 40 },
         attrs: {
             rect: { fill: 'lightblue', stroke: 'blue', 'stroke-width': 2 },
@@ -231,7 +236,7 @@ function createTopics(id, name){
 
     return new joint.shapes.standard.Rectangle({
         id: id,
-        position: { x:100, y: 50 },
+        //position: { x:100, y: 50 },
         size: { width: 100, height: 40 },
         attrs: {
             rect: { fill: 'lightblue', stroke: 'blue', 'stroke-width': 2 },
@@ -261,10 +266,10 @@ function createTopics(id, name){
     const width = Math.max(textWidth, 100); // Ensure a minimum width to accommodate shorter text
     const node =  new joint.shapes.standard.Rectangle({
         id: id,
-        position: {
-          x: 250,
-          y: 500
-        },
+        //position: {
+        //  x: 250,
+        //  y: 500
+        //},
         size: {
           width: width,
           height: 45
@@ -321,8 +326,8 @@ function createTopics(id, name){
                   fontFamily: "sans-serif"
                 },
               },
-              size: { width: PORT_WIDTH, height: PORT_HEIGHT },
-              position: "absolute"
+              size: { width: PORT_WIDTH, height: PORT_HEIGHT }
+              //position: "absolute"
             },
           },
           items: []

@@ -24,6 +24,12 @@ const paper = new dia.Paper({
 paper.on('element:pointerclick', function(view, evt) {
     evt.stopPropagation();
     toggleBranch(view.model);
+    // resetting the layout here has an effect after collapsing and then moving the topic nodes 
+    // manually to be closer (it moves them so the expanded nodes will fit if you re-expand after
+    // moving. It doesn't seem to have any effect after just collapsing a node's children 
+    // though. So I think it has promise as an approach but more work is needed to figure out
+    // how to get the layout to redraw everytime the way we want it to
+    doLayout();
 })
         
 
@@ -98,13 +104,7 @@ function buildTheGraph(){
       });
       graph.addCells(Elements)
       //graph.addCells(Elements.concat(Links))
-      joint.layout.DirectedGraph.layout(graph, {
-        setLinkVertices: false, // Optional: Prevent the plugin from setting link vertices
-        nodeSep: 50,
-        edgeSep: 80,
-        rankDir: "LR",
-        ranker: 'network-simplex'
-    });
+      layout = doLayout();
    })
 }
 
@@ -138,20 +138,25 @@ function checkOutcomes(topic, arr, parentNode){
   
 }
 
+function doLayout() {
+  // Apply layout using DirectedGraph plugin
+  layout = joint.layout.DirectedGraph.layout(graph, {
+	  // commenting these out had no effect - maybe they are overridden by the router algorithm?
+//      setLinkVertices: false, // Optional: Prevent the plugin from setting link vertices
+//      nodeSep: 50,
+ //     edgeSep: 80,
+      rankDir: "LR",
+      ranker: 'tight-tree'
+  });
+  return layout;
+}
 
 buildTheGraph();
+//doLayout();
 
 
 // Add nodes and link to the graph
 //graph.addCells([rect, circle, link, circle2, link2, rect2, link3, link4, rect3, link5]);
-// Apply layout using DirectedGraph plugin
-joint.layout.DirectedGraph.layout(graph, {
-    setLinkVertices: false, // Optional: Prevent the plugin from setting link vertices
-    nodeSep: 50,
-    edgeSep: 80,
-    rankDir: "LR",
-    ranker: 'network-simplex'
-});
 
 
 
