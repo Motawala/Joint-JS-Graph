@@ -58,7 +58,6 @@ function closeTheRest(element){
     const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
     subElementsLinks.forEach(subLinks =>{
         subLinks.set('hidden', true)
-        console.log(paper.findViewByModel(subLinks).requestConnectionUpdate())
     });
 
     const successrorCells = graph.getSubgraph([
@@ -253,6 +252,7 @@ paper.on('cell:mouseover', function(cellView) {
                 });
             }
             if(element.childNodes.button.id == "Definition"){
+                //console.log(element)
                 var bbox = cellView.model.getBBox();
                 var paperRect1 = paper.localToPaperRect(bbox);
                 // Set the position of the element according to the pointer and make it visible
@@ -276,7 +276,6 @@ paper.on('cell:mouseover', function(cellView) {
   //Hide the subtopic when the mouse pointer leaves the button
     paper.on('cell:mouseleave', function(cellView) {
     try {
-
         //From the element View look for the element tools
         var toolsArray = cellView._toolsView.tools
         toolsArray.forEach(element => {
