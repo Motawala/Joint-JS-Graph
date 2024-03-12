@@ -26,7 +26,7 @@ const paper = new dia.Paper({
   linkView: CustomLinkView,
   interactive: { vertexAdd: false }, // disable default vertexAdd interaction,
   width: 10000,
-  height: 20000,
+  height: 8000,
   gridSize: 10,
   drawGrid: true,
   background: {
@@ -61,7 +61,8 @@ paper.on('element:pointerclick', function(view, evt) {
 })
 
 
-
+var root = []
+var models = []
 function buildTheGraph(){
   var Elements = []
     fetch('graph.jsonld')
@@ -103,10 +104,15 @@ function buildTheGraph(){
       // in reality we want to navigate the entire graph
       const frameArray = frame['@graph']
       duplicateFrame = frameArray
+      let xAxis = 100;
+      let yAxis = 100;
       frameArray.forEach(node =>{
             if(node['additionalType'] == "RdAF Stage"){
               var stage = linkNodes(node, Elements, "", "Stages")
-              Elements.push(stage)
+              stage.position(100,100)
+              graph.addCells(stage)
+              root.push(stage)
+              //Elements.push(stage)
               topic = node['sunyrdaf:includes']
               if(Array.isArray(topic)){
                 topic.forEach(topics =>{
@@ -139,17 +145,10 @@ function buildTheGraph(){
               }
             }
       });
-
+      paper.setInteractivity(false);
       graph.addCells(Elements)
-      graph.getElements().forEach(element =>{
-        if(!element.get('hidden'))
-          element.transition('position/x', 250, {
-            delay: 100,
-            duration: 5,
-            timingFunction: function(t) { return t*t; },
-            valueFunction: function(a, b) { return function(t) { return a + (b - a) * t }}
-          });
-      })
+      // Perform layout after setting positions
+      models = Elements
       layout = doLayout();
   })
 }
@@ -326,8 +325,9 @@ function checkForSubTopics(outcome, arr, parentNode){
   }
 }
 
-
-
+/*
+This function takes the nodes and links it
+*/
 function linkNodes(childNode, arr, parentNode, typeOfNode){
   if(typeOfNode == "Stages"){
     var stage = createStage(childNode['@id'], childNode['name'])
@@ -383,42 +383,67 @@ function linkNodes(childNode, arr, parentNode, typeOfNode){
 }
 
 
+
 function doLayout() {
   // Apply layout using DirectedGraph plugin
-  layout = joint.layout.DirectedGraph.layout(graph, {
-    setLinkVertices: true,
+  var visibleElements = []
+  //Checks for the visible elements on the graph when an event occurs and adds it to the layout
+  models.forEach(el =>{
+    if(!el.get('hidden') ){
+      visibleElements.push(el)
+    }
+  })
+  layout = joint.layout.DirectedGraph.layout(visibleElements, {
+    setVertices: true,
     rankDir: 'LR',
-    nodeSep: 25, // Reduce separation between adjacent nodes
-    edgeSep: 10, // Reduce separation between adjacent edges
-    rankSep: 10, // Reduce separation between ranks
-    marginX: 30,
-    marginY: 30,
-    ranker:'tight-tree',
-    resizeClusters: false, // Prevent parent elements from stretching to fit children
-    setPosition: function(element, position) {
-       // Check if the parent element is hidden
-       const parent = element.getParentCell();
-       if (parent && parent.get('hidden')) {
-         // Reduce the vertical spacing between elements if the parent is hidden
-         element.transition('position/y', position.y + 50, {
-           delay: 100,
-           duration: 500,
-           timingFunction: joint.util.timing.linear
-         });
-       } else {
-         // Default spacing
-         element.transition('position/y', position.y + 150, {
-           delay: 100,
-           duration: 500,
-           timingFunction: joint.util.timing.linear
-         });
-       }
-       // Set the position of the element
-       element.translate(position.x, position.y);
-     }
-   });
-   return layout;
+    nodeSep: 0, // Increase the separation between adjacent nodes
+    edgeSep: 0, // Increase the separation between adjacent edges
+    rankSep: 0, // Increase the separation between node layers
+    marginX: 50, // Add margin to the left and right of the graph
+    marginY: 50, // Add margin to the top and bottom of the graph
+    step: 10, // Adjust as needed
+    padding: 10, // Adjust as needed
+    maximumLoops: 2000, // Adjust as needed
+    maxAllowedDirectionChange: 90, // Adjust as needed
+  });
+
+  setRootToFix();
+  //return layout;
 }
+
+
+//This function sets the root elements to a fix position
+function setRootToFix(){
+  const rootCenter = { x: 300, y: 1500 };
+
+  // Calculate the total height of all root elements
+  let totalHeight = 0;
+  root.forEach(element => {
+      totalHeight += element.size().height;
+  });
+
+  // Calculate the y-coordinate for the topmost root element
+  let currentY = rootCenter.y - totalHeight / 2;
+  root.forEach(el =>{
+    const { width, height } = el.size();
+
+    // Calculate the x-coordinate for the current root element
+    const currentX = rootCenter.x - width;
+
+    // Calculate the difference between the current position and the desired position
+    const diff = el.position().difference({
+        x: currentX,
+        y: currentY
+    });
+
+    // Translate the element to the desired position
+    el.translate(-diff.x, -diff.y);
+
+    // Update the y-coordinate for the next root element
+    currentY += height;
+  })
+}
+
 
 
 

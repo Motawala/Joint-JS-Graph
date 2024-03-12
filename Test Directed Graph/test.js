@@ -1,200 +1,140 @@
-// Create a new graph
-const graph = new joint.dia.Graph();
+const { dia, elementTools, shapes, linkTools, util } = joint;
 
-// Create a new paper
-const paper = new joint.dia.Paper({
-    el: document.getElementById("graph-container"),
-    model: graph,
-    width: 4000,
-    height: 2000,
-    gridSize: 10,
-    drawGrid: true,
-    background: {
-        color: '#f9f9f9'
+// Define custom shapes
+
+const MyShape1 = dia.Element.define(
+    'MyShape1',
+    {
+        size: {
+            width: 100,
+            height: 60,
+        },
+        attrs: {
+            root: {
+                title: 'Custom Shape 1',
+            },
+            body: {
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeWidth: 2,
+            },
+            label: {
+                fontSize: 14,
+                fill: '#000000',
+                textWrap: {
+                    width: -10,
+                    height: -10,
+                    ellipsis: true,
+                },
+                textAnchor: 'middle',
+                textVerticalAnchor: 'middle',
+            },
+        },
     },
-    async: true,
-    //Viewport function supports collapsing/uncollapsing behaviour on paper
-    viewport: function(view) {
-        // Return true if model is not hidden
-        return !view.model.get('hidden');
+    {
+        markup: util.svg`
+            <rect class="body" />
+            <text class="label" />
+        `,
     }
-});
+);
 
-// Create parent elements
-const parent1 = new joint.shapes.standard.Rectangle({
-    position: { x: 0, y: 100 },
-    size: { width: 150, height: 100 },
-    attrs: {
-        rect: { fill: '#3498db' },
-        text: { text: 'Parent 1', fill: 'white' }
+const MyShape2 = dia.Element.define(
+    'MyShape2',
+    {
+        size: {
+            width: 120,
+            height: 80,
+        },
+        attrs: {
+            root: {
+                title: 'Custom Shape 2',
+            },
+            body: {
+                fill: '#ffffff',
+                stroke: '#ff0000',
+                strokeWidth: 2,
+            },
+            label: {
+                fontSize: 16,
+                fill: '#ff0000',
+                textWrap: {
+                    width: -10,
+                    height: -10,
+                    ellipsis: true,
+                },
+                textAnchor: 'middle',
+                textVerticalAnchor: 'middle',
+            },
+        },
+    },
+    {
+        markup: util.svg`
+            <rect class="body" />
+            <text class="label" />
+        `,
     }
+);
+
+// Create a graph and paper
+
+const graph = new dia.Graph();
+const paper = new dia.Paper({
+    el: document.getElementById('graph-container'),
+    model: graph,
+    width: 2800,
+    height: 1600,
+    gridSize: 10,
+    perpendicularLinks: true,
+    defaultLink: new dia.Link({
+        attrs: {
+            line: {
+                stroke: '#000000',
+                strokeWidth: 2,
+                targetMarker: {
+                    type: 'path',
+                    fill: '#000000',
+                    d: 'M 10 -5 0 0 10 5 Z',
+                },
+            },
+        },
+    }),
 });
 
-const parent2 = new joint.shapes.standard.Rectangle({
-    position: { x: 0, y: 210 },
-    size: { width: 150, height: 100 },
-    attrs: {
-        rect: { fill: '#e74c3c' },
-        text: { text: 'Parent 2', fill: 'white' }
-    }
-});
+// Define custom positions function
 
-// Create child elements for parent 1
-const child1_1 = new joint.shapes.standard.Rectangle({
-    position: { x: 200, y: 130 },
-    size: { width: 50, height: 30 },
-    attrs: {
-        rect: { fill: '#27ae60' },
-        text: { text: 'Child 1.1', fill: 'white' }
-    }
-});
+function positionShapes(graph) {
+    const elements = graph.getElements();
+    let x = 50;
+    let y = 50;
 
-const child1_2 = new joint.shapes.standard.Rectangle({
-    position: { x: 250, y: 180 },
-    size: { width: 50, height: 30 },
-    attrs: {
-        rect: { fill: '#27ae60' },
-        text: { text: 'Child 1.2', fill: 'white' }
-    }
-});
-
-const child1_3 = new joint.shapes.standard.Rectangle({
-    position: { x: 300, y: 230 },
-    size: { width: 50, height: 30 },
-    attrs: {
-        rect: { fill: '#27ae60' },
-        text: { text: 'Child 1.3', fill: 'white' }
-    }
-});
-
-// Create child elements for parent 2
-const child2_1 = new joint.shapes.standard.Rectangle({
-    position: { x: 370, y: 300 },
-    size: { width: 50, height: 30 },
-    attrs: {
-        rect: { fill: '#f39c12' },
-        text: { text: 'Child 2.1', fill: 'white' }
-    }
-});
-
-const child2_2 = new joint.shapes.standard.Rectangle({
-    position: { x: 370, y: 350 },
-    size: { width: 50, height: 30 },
-    attrs: {
-        rect: { fill: '#f39c12' },
-        text: { text: 'Child 2.2', fill: 'white' }
-    }
-});
-
-const child2_3 = new joint.shapes.standard.Rectangle({
-    position: { x: 370, y: 400 },
-    size: { width: 50, height: 30 },
-    attrs: {
-        rect: { fill: '#f39c12' },
-        text: { text: 'Child 2.3', fill: 'white' }
-    }
-});
-
-// Add elements to the graph
-graph.addCells([parent1, parent2, child1_1, child1_2, child1_3, child2_1, child2_2, child2_3]);
-
-// Create links between parent and child elements
-const link1 = new joint.shapes.standard.Link({
-    source: { id: parent1.id },
-    target: { id: child1_1.id }
-});
-
-const link2 = new joint.shapes.standard.Link({
-    source: { id: parent1.id },
-    target: { id: child1_2.id }
-});
-
-const link3 = new joint.shapes.standard.Link({
-    source: { id: parent1.id },
-    target: { id: child1_3.id }
-});
-
-const link4 = new joint.shapes.standard.Link({
-    source: { id: parent2.id },
-    target: { id: child2_1.id }
-});
-
-const link5 = new joint.shapes.standard.Link({
-    source: { id: parent2.id },
-    target: { id: child2_2.id }
-});
-
-const link6 = new joint.shapes.standard.Link({
-    source: { id: parent2.id },
-    target: { id: child2_3.id }
-});
-
-// Add links to the graph
-graph.addCells([link1, link2, link3, link4, link5, link6]);
-var links = [link1, link2, link3, link4, link5, link6]
-links.forEach(link =>{
-    link.set('hidden', true)
-    link.getTargetElement().set('hidden', true)
-})
-
-paper.on("element:pointerclick", function(view, evt) {
-    if(view.model.isElement()){
-        var shouldHide = view.model.get("collapsed")
-        view.model.set('collapsed', !shouldHide);
-        const connectedLinks = graph.getConnectedLinks(view.model, {outbound:true})
-        connectedLinks.forEach(targetLinks =>{
-            const element = targetLinks.getTargetElement();
-            element.set('hidden', shouldHide)
-            element.set('collapsed', false)
-            //Make the links visible
-            targetLinks.set('hidden', shouldHide)
-            repositionParents();
-            if(!element.get('collapsed')){
-                //This condition closes all the nodes when the user intereacts with the parentNode
-                const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
-                subElementsLinks.forEach(subLinks =>{
-                        subLinks.set('hidden', true)
-                });
-                const successrorCells = graph.getSubgraph([
-                    ...graph.getSuccessors(element),
-                ])
-                successrorCells.forEach(function(successor) {
-                    successor.set('hidden', true);
-                    successor.set('collapsed', false);
-                });
-
-            }
-        })
-    }
-})
-
-
-function repositionParents() {
-    const parent1Children = graph.getNeighbors(parent1);
-    const parent2Children = graph.getNeighbors(parent2);
-    console.log(parent1Children)
-    const parent1Y = 100;
-    const parent2Y = 210;
-
-    if (parent1Children.length === 0) {
-        parent1.position(parent1.position().x, parent1Y);
-    } else {
-        parent1.position(parent1.position().x, parent1Y + 350);
-    }
-
-    if (parent2Children.length === 0) {
-        parent2.position(parent2.position().x, parent2Y);
-    } else {
-        parent2.position(parent2.position().x, parent2Y - 50);
-    }
+    elements.forEach((element, index) => {
+        // Check if the element is at an even index
+        if (index % 2 === 0) {
+            // Position using x and y
+            element.position(x, y);
+            x += 150; // Increase x for next shape
+        } else {
+            // Position using coordinates object
+            element.position({
+                x: x - 120, // Adjust x to overlap with the previous shape
+                y: y + 100, // Increase y for next row of shapes
+            });
+        }
+    });
 }
 
-// Listen for changes in child elements visibility
-graph.on('change:visibility', function(cell, visibility, opt) {
-    if (cell.isElement() && (cell === parent1 || cell === parent2)) {
-        console.log("Here")
-        repositionParents();
-    }
-});
+// Add custom shapes to the graph
 
-// Initially reposition parent elements based on their children visibility
+const shape1 = new MyShape1();
+const shape2 = new MyShape2();
+
+graph.addCell(shape1);
+graph.addCell(shape2);
+
+// Position the shapes
+
+positionShapes(graph);
+
+// Render the paper
+

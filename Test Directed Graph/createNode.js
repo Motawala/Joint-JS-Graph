@@ -3,55 +3,38 @@ var PORT_WIDTH = 90;
 const PORT_HEIGHT = 20;
 const PORT_GAP = 20;
 
-//Thing to consider -> later
-joint.routers.randomWalk = function(vertices, args, linkView) {
-    var paper = options.paper;
-    var padding = 20; // Padding between elements
 
-    // Iterate through the vertices and adjust positions to be closer together
-    _.each(vertices, function(vertex, index) {
-        if (index > 0) {
-            var prevVertex = vertices[index - 1];
-            var distance = Math.abs(vertex.x - prevVertex.x);
-
-            // If the distance between elements is too large, move them closer
-            if (distance > padding) {
-                if (vertex.x > prevVertex.x) {
-                    vertex.x = prevVertex.x + padding;
-                } else {
-                    vertex.x = prevVertex.x - padding;
-                }
-            }
-        }
-    });
-
-    // Call the parent route method to finalize routing
-    return joint.routers.normal.prototype.route.call(this, vertices, options);
-
-}
-
-
+//Looking on How to prevent the links from overlapping the nearby elements, and how to set the length of the links
+// Also how to increase the size of the paper when object overflow
 function makeLink(from,to) {
     const link = new joint.shapes.standard.Link({
       source: { id: from.id},
-      target: { id: to.id },
-      attr:{
-        '.connection': { stroke: 'red', 'stroke-dasharray': '5,5' }
+      target: { id: to.id},
+
+      attrs: {
+        '.connection': { stroke: 'blue', 'stroke-width': 2, 'stroke-dasharray': '5,5' }, // Adjust the stroke style
+        '.marker-target': { fill: 'red', d: 'M 10 0 L 0 5 L 10 10 z' } // Add a custom arrowhead to the target end
       }
     });
-     // see https://resources.jointjs.com/docs/jointjs/v3.7/joint.html#routers
-     // I haven't tried the other algorithms but it might be worth experimenting
-     // with them all to see which works best
-    link.router('metro',{
-        margin:0,
+
+    link.router('manhattan', {
+        margin: 0,
         startDirections: ['right'],
         endDirections: ['left'],
-        //excludeEnds: ['source'],
+        step: 5,
+        padding: 15,
+        perpendicular: true,
+        maxAllowedDirectionChange:150,
+        excludeEnds: ['source', 'target']
     });
-    link.connector('normal');
+    link.connector('rounded');
     link.set('hidden', true);
+
+
     return link
 }
+
+
 
 function createStage(id, name){
   const node = new joint.shapes.standard.Rectangle({
@@ -138,7 +121,7 @@ function createTopics(id, name){
       //},
       size: {
         width: width,
-        height: 65
+        height: 45
       },
       NodeType:{
         type: "Topics"
@@ -153,8 +136,8 @@ function createTopics(id, name){
           strokeWidth: 5,
           paintOrder: "stroke",
           text: name,
-         },
-         body: {
+        },
+        body: {
           strokeWidth: 2,
           fill: "#4d80b3",
           cursor: "grab"
@@ -165,11 +148,12 @@ function createTopics(id, name){
       }
     });
     node.set('hidden', true);
+    node.set('collapsed', false)
     return node
- }
+}
 
 
- function createConsiderations(id, name){
+function createConsiderations(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 10
   }else{
@@ -184,7 +168,7 @@ function createTopics(id, name){
       //},
       size: {
         width: width,
-        height: 65
+        height: 35
       },
       attrs: {
         label: {
@@ -195,8 +179,8 @@ function createTopics(id, name){
           stroke: "#333333",
           paintOrder: "stroke",
           text: name,
-         },
-         body: {
+        },
+        body: {
           strokeWidth: 2,
           fill: "white",
           cursor: "grab"
@@ -208,12 +192,13 @@ function createTopics(id, name){
       }
     });
     node.set('hidden', true);
+    node.set('collapsed', false)
     return node
- }
+}
 
 
 
- function createSubTopics(id, name){
+function createSubTopics(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 10
   }else{
@@ -241,8 +226,8 @@ function createTopics(id, name){
           stroke: "#333333",
           paintOrder: "stroke",
           text: name,
-         },
-         body: {
+        },
+        body: {
           strokeWidth: 2,
           fill: "white",
           cursor: "grab"
@@ -254,22 +239,20 @@ function createTopics(id, name){
       }
     });
     node.set('hidden', true);
+    node.set('collapsed', false)
     return node
- }
+}
 
 
- function createOutcomes(id, name){
+function createOutcomes(id, name){
     const textWidth = name.length * 10; // Approximate width based on font size and average character width
     const width = Math.max(textWidth, 100); // Ensure a minimum width to accommodate shorter text
     const node =  new joint.shapes.standard.Rectangle({
         id: id,
-        //position: {
-        //  x: 250,
-        //  y: 500
-        //},
+
         size: {
           width: width,
-          height: 90
+          height: 70
         },
         attrs: {
           label: {
@@ -281,8 +264,8 @@ function createTopics(id, name){
             strokeWidth: 5,
             paintOrder: "stroke",
             text: name,
-           },
-           body: {
+          },
+          body: {
             strokeWidth: 2,
             fill: "	#ffcccc",
             cursor: "grab"
@@ -294,6 +277,7 @@ function createTopics(id, name){
         }
       });
       node.set('hidden', true);
+      node.set('collapsed', false)
       return node;
 }
 
@@ -320,8 +304,8 @@ function createActivities(id, name){
           stroke: "#333333",
           paintOrder: "stroke",
           text: name,
-         },
-         body: {
+        },
+        body: {
           strokeWidth: 2,
           fill: "#9999e6",
           cursor: "grab"
@@ -333,6 +317,7 @@ function createActivities(id, name){
       }
     });
     node.set('hidden', true);
+    node.set('collapsed', false)
     return node
 }
 
@@ -380,7 +365,7 @@ function createPort(id,group, name) {
         name: 'left'
       },
       markup: [{
-         tagName: 'text',
+        tagName: 'text',
             selector: 'label'
         }]
     },

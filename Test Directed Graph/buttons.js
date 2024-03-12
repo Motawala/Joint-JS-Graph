@@ -2,6 +2,17 @@
     CIRCLE BUTTON
 */
 function radioButton(port, index, name){
+  if(name == "Not Started"){
+    var space = 100
+    var buttonWidth = (index - 300) / 2
+  }else if(name == "In Progress"){
+    var space = 200
+    var buttonWidth = (index - 300) / 2
+  }else{
+    var space = 300
+    var buttonWidth = (index - 300) / 2
+  }
+
     var button  = new joint.elementTools.Button({
       markup: [
         {
@@ -24,14 +35,14 @@ function radioButton(port, index, name){
             'font-size': '15px',
             'font-family': 'Arial',
             'text-anchor': 'middle',
-            'x':-40,
-            'y': -20, // Adjust text position
+            'x':-45,
+            'y': -10, // Adjust text position
             'cursor': 'pointer',
           }
           },
       ],
-      x: 200 + index*100, // Set position based on index
-      y: 100 , // Adjust y position based on index
+      x:buttonWidth + space, // Set position based on index
+      y: 80 , // Adjust y position based on index
       offset: { x: -8, y: -8 },
       action: function(evt, elementView) {
         radioButtonEvents(elementView, port)
@@ -64,13 +75,12 @@ function radioButtonView(portName, element, tools){
   var port1 = createPort(portName[0], 'out');
   var port2 = createPort(portName[1],'out');
   var port3 = createPort(portName[2], 'out');
-
   element.addPort(port1)
   element.addPort(port2)
   element.addPort(port3)
-  tools.push(radioButton(port1,0, 'Not Started'))
-  tools.push(radioButton(port2, 1, 'In Progress'))
-  tools.push(radioButton(port3, 2, "Achieved"))
+  tools.push(radioButton(port1, element.size().width, 'Not Started'))
+  tools.push(radioButton(port2, element.size().width, 'In Progress'))
+  tools.push(radioButton(port3, element.size().width, "Achieved"))
 }
 
 /*
@@ -173,8 +183,8 @@ function createSubTopicButton(port, pos){
         selector: 'button',
         attributes: {
             'id': port.id,
-            'width': 120,
-            'height': 30,
+            'width': 100,
+            'height': 20,
             'rx': 10, // Border radius
             'ry': 10, // Border radius
             'fill': '#ffbf80', // Button background color
@@ -189,10 +199,11 @@ function createSubTopicButton(port, pos){
           textContent: port.id, // Text displayed on the button
           attributes: {
             'fill': 'black', // Text color
-            'font-size': '17px',
+            'font-size': '12px',
+            'font-weight': 'bold',
             'font-family': 'Arial',
             'text-anchor': 'middle',
-            'x':60,
+            'x':47,
             'y': 15, // Adjust text position
             'cursor': 'pointer'
         }

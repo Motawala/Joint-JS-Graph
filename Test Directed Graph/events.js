@@ -27,6 +27,7 @@ function openBranch(child, shouldHide){
             const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
             subElementsLinks.forEach(subLinks =>{
                     subLinks.set('hidden', true)
+                    subLinks.set('collapsed', false)
             });
 
             const successrorCells = graph.getSubgraph([
@@ -35,18 +36,17 @@ function openBranch(child, shouldHide){
             successrorCells.forEach(function(successor) {
                 successor.set('hidden', true);
                 successor.set('collapsed', false);
-            });
 
+            });
         }
         //closeTheRest(element)
 	// I don't think I'm calling this correctly, or in the right
 	// place but see https://resources.jointjs.com/docs/jointjs/v3.7/joint.html#dia.LinkView.prototype.requestConnectionUpdate
 	// in theory it should help with recalculating the routes after
 	// things move
-	paper.findViewByModel(targetLink).requestConnectionUpdate();
         //What I have implemented below works fine and is a good way to hide when we stop at one point in the tree, but I look into it and see if it helps
     })
-
+    doLayout();
 }
 
 
@@ -58,6 +58,7 @@ function closeTheRest(element){
     const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
     subElementsLinks.forEach(subLinks =>{
         subLinks.set('hidden', true)
+        subLinks.set('collapsed', false)
     });
 
     const successrorCells = graph.getSubgraph([
@@ -67,7 +68,7 @@ function closeTheRest(element){
         successor.set('hidden', true);
         successor.set('collapsed', false);
     });
-
+    doLayout()
 }
 
 
@@ -155,14 +156,8 @@ function defaultEvent(node, typeOfPort){
                 if(links.getTargetElement().prop('name/first') == typeOfPort){
                     links.getTargetElement().set('hidden', false)
                     links.getTargetElement().set('collapsed', true)
-                    //Make the links visible
                     links.set('hidden', false)
-                    /*const orphanLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
-                    orphanLinks.forEach(orphans =>{
-                        if(orphans.get('hidden') == true){
-                            orphans.set('hidden', true)
-                        }
-                    })*/
+                    links.set('collapsed', true)
                     if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
                         var elementView = links.getTargetElement().findView(paper)
@@ -184,6 +179,7 @@ function defaultEvent(node, typeOfPort){
                     }
                 }
             })
+            doLayout()
         }
     }else{
         const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
@@ -193,7 +189,7 @@ function defaultEvent(node, typeOfPort){
                 links.getTargetElement().set('collapsed', false)
                 //Make the links visible
                 links.set('hidden', true)
-
+                links.set('collapsed', false)
                 /*const inboundLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
                 inboundLinks.forEach(orphans =>{
                     links.getTargetElement().set('hidden', true)
@@ -221,7 +217,7 @@ function defaultEvent(node, typeOfPort){
                 }
             }
         })
-
+        doLayout()
     }
 }
 
