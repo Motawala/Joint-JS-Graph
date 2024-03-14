@@ -8,12 +8,12 @@ const PORT_GAP = 20;
 // Also how to increase the size of the paper when object overflow
 function makeLink(from,to) {
     const link = new joint.shapes.standard.Link({
-      source: { id: from.id},
-      target: { id: to.id},
+      source: { id: from.id, anchor:{name: "right"}},
+      target: { id: to.id, anchor:{name: "left"}},
 
       attrs: {
         '.connection': { stroke: 'blue', 'stroke-width': 2, 'stroke-dasharray': '5,5' }, // Adjust the stroke style
-        '.marker-target': { fill: 'red', d: 'M 10 0 L 0 5 L 10 10 z' } // Add a custom arrowhead to the target end
+
       }
     });
 
@@ -22,7 +22,7 @@ function makeLink(from,to) {
         startDirections: ['right'],
         endDirections: ['left'],
         step: 5,
-        padding: 15,
+        padding: 10,
         perpendicular: true,
         maxAllowedDirectionChange:150,
         excludeEnds: ['source', 'target']
@@ -353,6 +353,11 @@ function setPorts(el, ports) {
 
   }
 
+let uniqueButtonIdCounter = 1;
+
+function generateUniqueButtonId() {
+    return 'button_' + uniqueButtonIdCounter++;
+}
 
 
 //Creates The ports on the Elements

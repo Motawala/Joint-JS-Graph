@@ -18,26 +18,30 @@ function openBranch(child, shouldHide){
         //elements connected to the child, those in the 1st rank of the graph
         //Target Elements only allow access to the first connected Element of the parent.
         const element = targetLink.getTargetElement()
-        element.set('hidden', shouldHide)
-        element.set('collapsed', false)
-        //Make the links visible
-        targetLink.set('hidden', shouldHide)
-        if(!element.get('collapsed')){
-            //This condition closes all the nodes when the user intereacts with the parentNode
-            const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
-            subElementsLinks.forEach(subLinks =>{
-                    subLinks.set('hidden', true)
-                    subLinks.set('collapsed', false)
-            });
+        if(element){
+            element.set('hidden', shouldHide)
+            element.set('collapsed', false)
+            //Make the links visible
+            targetLink.set('hidden', shouldHide)
+            if(!element.get('collapsed')){
+                //This condition closes all the nodes when the user intereacts with the parentNode
+                const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
+                subElementsLinks.forEach(subLinks =>{
+                        subLinks.set('hidden', true)
+                        subLinks.set('collapsed', false)
+                });
 
-            const successrorCells = graph.getSubgraph([
-                ...graph.getSuccessors(element),
-            ])
-            successrorCells.forEach(function(successor) {
-                successor.set('hidden', true);
-                successor.set('collapsed', false);
+                const successrorCells = graph.getSubgraph([
+                    ...graph.getSuccessors(element),
+                ])
+                successrorCells.forEach(function(successor) {
+                    successor.set('hidden', true);
+                    successor.set('collapsed', false);
 
-            });
+                });
+            }else{
+                console.error("Element Undefined")
+            }
         }
         //closeTheRest(element)
 	// I don't think I'm calling this correctly, or in the right
@@ -60,6 +64,7 @@ function closeTheRest(element){
         subLinks.set('hidden', true)
         subLinks.set('collapsed', false)
     });
+
 
     const successrorCells = graph.getSubgraph([
         ...graph.getSuccessors(element),
@@ -111,6 +116,10 @@ function hideSubtopic(node, typeOfPort){
     }
 }
 
+function removeButton(button){
+    butt
+}
+
 
 //This function handles the event for the 3 buttons on the outcomes node
 function radioButtonEvents(elementView, port){
@@ -120,6 +129,27 @@ function radioButtonEvents(elementView, port){
     var fill = circleElement.getAttribute('fill');
     var activityButton = elementView._toolsView.tools[1].$el[0]
     var considerationButton = elementView._toolsView.tools[0].$el[0]
+    const outboundLinks = (graph.getConnectedLinks(elementView.model, {outbound: true}))
+    if(outboundLinks.length == 1){
+        if(outboundLinks[0].getTargetElement().attributes.name['first'] == "Activities"){
+            if(considerationButton){
+                considerationButton.remove()
+            }else{
+                console.log("Considerations button is already removed")
+            }
+        }else{
+            if(activityButton){
+                activityButton.remove()
+            }else{
+                console.log("Activities button is already removed")
+            }
+        }
+    }else if(outboundLinks.length == 0){
+        if(considerationButton && activityButton){
+            considerationButton.remove()
+            activityButton.remove()
+        }
+    }
     //Change the color of the element when clicked
     if(circleElement.id == `${port.id}`){
         if(circleElement.id.startsWith('A')){
@@ -150,33 +180,40 @@ function radioButtonEvents(elementView, port){
 
 function defaultEvent(node, typeOfPort){
     if(node.get('collapsed')){
+        console.log(node.get('collapsed'))
         const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
         if(Array.isArray(OutboundLinks)){
             OutboundLinks.forEach(links =>{
-                if(links.getTargetElement().prop('name/first') == typeOfPort){
-                    links.getTargetElement().set('hidden', false)
-                    links.getTargetElement().set('collapsed', true)
-                    links.set('hidden', false)
-                    links.set('collapsed', true)
-                    if(typeOfPort == "Outcomes"){
-                    //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
-                        var elementView = links.getTargetElement().findView(paper)
-                        if(elementView.hasTools()){
-                            //Query's for the Activity Button on the and hides it
-                            const Actbutton = elementView._toolsView.tools[1].$el[0]
-                            const ConsiderationButtton = elementView._toolsView.tools[0].$el[0]
-                            Actbutton.style.visibility = "hidden"
-                            ConsiderationButtton.style.visibility = "hidden"
-                            const circleElement = elementView._toolsView.$el[0].querySelectorAll('circle')
-                            //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing
-                            circleElement.forEach(circle =>{
-                                if(circle.getAttribute('fill') == "Red" || circle.getAttribute('fill') == "Orange"){
-                                    Actbutton.style.visibility = "visible"
-                                    ConsiderationButtton.style.visibility = "visible"
-                                }
-                            })
+                if(links && links.getTargetElement()){
+                    console.log(typeOfPort)
+                    if(links.getTargetElement().prop('name/first') == typeOfPort){
+                        links.getTargetElement().set('hidden', false)
+                        links.getTargetElement().set('collapsed', true)
+                        links.set('hidden', false)
+                        links.set('collapsed', true)
+
+                        if(typeOfPort == "Outcomes"){
+                        //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
+                            var elementView = links.getTargetElement().findView(paper)
+                            if(elementView.hasTools()){
+                                //Query's for the Activity Button on the and hides it
+                                const Actbutton = elementView._toolsView.tools[1].$el[0]
+                                const ConsiderationButtton = elementView._toolsView.tools[0].$el[0]
+                                Actbutton.style.visibility = "hidden"
+                                ConsiderationButtton.style.visibility = "hidden"
+                                const circleElement = elementView._toolsView.$el[0].querySelectorAll('circle')
+                                //If the user has selected Not Started or In progress on Outcome, Below condition checks the status while opening and closing
+                                circleElement.forEach(circle =>{
+                                    if(circle.getAttribute('fill') == "Red" || circle.getAttribute('fill') == "Orange"){
+                                        Actbutton.style.visibility = "visible"
+                                        ConsiderationButtton.style.visibility = "visible"
+                                    }
+                                })
+                            }
                         }
                     }
+                }else{
+                    console.error("Link Array is not defined")
                 }
             })
             doLayout()
@@ -185,17 +222,29 @@ function defaultEvent(node, typeOfPort){
         const OutboundLinks = graph.getConnectedLinks(node, {outbound:true})
         OutboundLinks.forEach(links =>{
             if(links.getTargetElement().prop('name/first') == typeOfPort){
+                //Make the links visible
                 links.getTargetElement().set('hidden', true)
                 links.getTargetElement().set('collapsed', false)
                 //Make the links visible
                 links.set('hidden', true)
                 links.set('collapsed', false)
-                /*const inboundLinks = graph.getConnectedLinks(links.getTargetElement(), {inbound: true})
-                inboundLinks.forEach(orphans =>{
+                //This condition listens to the events on elements that has more than on parent
+                const orphanLink = graph.getConnectedLinks(links.getTargetElement(), {inbound:true})
+                if(orphanLink.length > 1){
+                    orphanLink.forEach(links =>{
+                        if(!links.get('hidden')){
+                            links.getTargetElement().set('hidden', false)
+                            links.getTargetElement().set('collapsed', true)
+                            links.set('hidden', false)
+                        }
+                    })
+                }else{
                     links.getTargetElement().set('hidden', true)
-                })*/
-                //graph.getConnectedLinks(links.getTargetElement(), {inbound:true}).set('hidden', true)
-                closeTheRest(links.getTargetElement())
+                    links.getTargetElement().set('collapsed', false)
+                    links.set('hidden', true)
+                    closeTheRest(links.getTargetElement())
+
+                }
                 if(typeOfPort == "Outcomes"){
                     //Using the html element (Activity button) instead to hide and show the particular button from the entire ElementView
                     var elementView = links.getTargetElement().findView(paper)
@@ -220,8 +269,6 @@ function defaultEvent(node, typeOfPort){
         doLayout()
     }
 }
-
-
 
 
 
@@ -317,3 +364,7 @@ function hoverTextBlock(element, node, elementView){
     div.style.visibility = "hidden"
     paper.el.appendChild(div);
 }
+
+paper.on("link:snap:disconnect", function(linkView) {
+    console.log(linkView)
+})

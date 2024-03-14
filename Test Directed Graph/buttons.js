@@ -82,7 +82,7 @@ function radioButtonView(portName, element, tools){
   tools.push(radioButton(port2, element.size().width, 'In Progress'))
   tools.push(radioButton(port3, element.size().width, "Achieved"))
 }
-
+var i = 0
 /*
   BUTTONS VIEW: Adds the button to the tools View
 */
@@ -96,6 +96,7 @@ function buttonView(portName, element, portNameList, parentNode){
   element.addPort(port);
   element.addPort(considerationPort)
   element.addPort(subTopicPort)
+
   //Create the Button
   if(portName == "Considerations"){
     tool.push(createConsiderationButton(port))
@@ -125,6 +126,7 @@ function createElementView(element, tool){
   //Embed tthe tools view in to the element view
   elementView.addTools(toolsView);
 }
+
 
 
 

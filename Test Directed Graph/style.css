@@ -59,3 +59,17 @@ body{
     stroke-width: 2; /* Border width */
     cursor: pointer; /* Cursor type */
   }
+
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .show-animation {
+    animation: fadeIn 0.5s ease forwards;
+  }

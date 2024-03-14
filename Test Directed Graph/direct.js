@@ -26,7 +26,7 @@ const paper = new dia.Paper({
   linkView: CustomLinkView,
   interactive: { vertexAdd: false }, // disable default vertexAdd interaction,
   width: 10000,
-  height: 8000,
+  height: 4000,
   gridSize: 10,
   drawGrid: true,
   background: {
@@ -213,37 +213,53 @@ function createTextBlock(element, node, parentNode){
 
 //Function to create considerations nodes
 function checkForConsiderations(outcome, arr, parentNode){
+
   if(Array.isArray(outcome)){
     //Condition to handle topics that includes multiple considerations
-    for (const considerations of outcome) {
+    outcome.forEach(considerations =>{
       if (considerations['name'] == undefined) {
-          for (const nodes of duplicateFrame) {
-              if (nodes['@id'] == considerations) {
-                  const considerationElement = linkNodes(nodes, arr, parentNode, "Considerations");
-                  createTextBlock(considerationElement, nodes, parentNode)
+        for (const nodes of duplicateFrame) {
+            if (nodes['@id'] == considerations) {
+                const considerationElement = linkNodes(nodes, arr, parentNode, "Considerations");
+                createTextBlock(considerationElement, nodes, parentNode)
+                if(considerationElement){
                   return considerationElement;
-              }
-          }
-      } else {
+                }else{
+                  console.error("Considerations undefined")
+                }
+            }
+        }
+      }else {
           const considerationElement = linkNodes(considerations, arr, parentNode, "Considerations");
           createTextBlock(considerationElement, considerations, parentNode)
-          return considerationElement;
+          if(considerationElement){
+            return considerationElement;
+          }else{
+            console.error("Considerations undefined")
+          }
       }
-  }
-
+    })
   }else{ //Condition to handle topics that includes a single considerations
     if(outcome['name'] == undefined){
       for (const nodes of duplicateFrame) {
           if (nodes['@id'] == outcome) {
               const considerationElement = linkNodes(nodes, arr, parentNode, "Considerations");
               createTextBlock(considerationElement, nodes, parentNode)
-              return considerationElement;
+              if(considerationElement){
+                return considerationElement;
+              }else{
+                console.error("Considerations undefined")
+              }
           }
       }
     }else{
       const considerationElement = linkNodes(outcome, arr, parentNode, "Considerations")
       createTextBlock(considerationElement, outcome, parentNode)
-      return considerationElement
+      if(considerationElement){
+        return considerationElement;
+      }else{
+        console.error("Considerations undefined")
+      }
     }
   }
 }
@@ -273,7 +289,11 @@ function checkForActivities(outcome, arr, parentNode){
       }else if(key == "sunyrdaf:includes"){
         const consideration = checkForConsiderations(outcome[key], arr, parentNode)
         var portName = ['Definition']
-        const embedButton = buttonView("Definition", consideration, portName)
+        if(consideration){
+          //const embedButton = buttonView("Definition", consideration, portName)
+        }else{
+          console.error("Considerations Undefined")
+        }
       }else if(key == "sunyrdaf:extends"){
         //Instead Of creating an element and a link for the subtopic, we have just used
         //the Name, description and the catalog number to define the subtopic into a textblock
@@ -325,6 +345,7 @@ function checkForSubTopics(outcome, arr, parentNode){
   }
 }
 
+const createdElementIds = new Set();
 /*
 This function takes the nodes and links it
 */
@@ -334,12 +355,12 @@ function linkNodes(childNode, arr, parentNode, typeOfNode){
     stage.prop('name/first', "Stages")
     setPorts(stage, ['Topics']);
     arr.push(stage)
+    //createTextBlock(stage, childNode, childNode)
     return stage;
   }
   if(typeOfNode == "Topics"){
     var topicElement = createTopics(childNode['@id'], childNode['name'])
     const linkStageToTopics = makeLink(parentNode, topicElement)
-    linkStageToTopics.labels([{attrs:{text:{text:"Topics"}}}])
     arr.push(topicElement, linkStageToTopics)
     return topicElement;
   }
@@ -354,16 +375,22 @@ function linkNodes(childNode, arr, parentNode, typeOfNode){
     const activityElement = createActivities(childNode['@id'], childNode['name'])
     const linkOutcomeToActivity = makeLink(parentNode, activityElement)
     activityElement.prop('name/first', "Activities")
-    linkOutcomeToActivity.labels([{attrs:{text:{text: "Activities"}}}])
     arr.push(activityElement, linkOutcomeToActivity)
     return activityElement;
   }
   if(typeOfNode == "Considerations"){
     const considerationElement = createConsiderations(childNode['@id'], childNode['name'])
     const linkOutcomeToConsideration = makeLink(parentNode, considerationElement)
+    if (createdElementIds.has(childNode['@id'])) {
+      console.warn(`Element with ID '${childNode['name']}' already exists. Skipping creation.`);
+    }else{
+      var portName = ['Definition']
+      const embedButton = buttonView("Definition", considerationElement, portName)
+      createdElementIds.add(childNode['@id'])
+    }
     considerationElement.prop('name/first', "Considerations")
-    linkOutcomeToConsideration.labels([{attrs:{text:{text: "Considerations"}}}])
     arr.push(considerationElement, linkOutcomeToConsideration)
+
     return considerationElement;
   }
   if(typeOfNode == "Subtopic"){
@@ -393,28 +420,39 @@ function doLayout() {
       visibleElements.push(el)
     }
   })
+
+  // Apply CSS animation to visible elements
+  visibleElements.forEach(el => {
+    el.attr('class', 'show-animation'); // Add CSS class for animation
+  });
+
+
   layout = joint.layout.DirectedGraph.layout(visibleElements, {
     setVertices: true,
     rankDir: 'LR',
-    nodeSep: 0, // Increase the separation between adjacent nodes
-    edgeSep: 0, // Increase the separation between adjacent edges
-    rankSep: 0, // Increase the separation between node layers
+    nodeSep: 20, // Increase the separation between adjacent nodes
+    edgeSep: 10, // Increase the separation between adjacent edges
+    rankSep: 300, // Increase the separation between node layers
     marginX: 50, // Add margin to the left and right of the graph
     marginY: 50, // Add margin to the top and bottom of the graph
     step: 10, // Adjust as needed
     padding: 10, // Adjust as needed
-    maximumLoops: 2000, // Adjust as needed
-    maxAllowedDirectionChange: 90, // Adjust as needed
+    maximumLoops: 0, // Adjust as needed
+    maxAllowedDirectionChange: 90, // Adjust as needed,
+    startDirections: ['right'],
+    endDirections:['left'],
+    size:{width: 200, height:65}
   });
 
+
+
   setRootToFix();
-  //return layout;
 }
 
 
 //This function sets the root elements to a fix position
 function setRootToFix(){
-  const rootCenter = { x: 300, y: 1500 };
+  const rootCenter = { x: 300, y: 1000 };
 
   // Calculate the total height of all root elements
   let totalHeight = 0;
