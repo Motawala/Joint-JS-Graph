@@ -6,8 +6,8 @@ const graph = new dia.Graph({}, { cellNamespace: shapes });
 const paper = new dia.Paper({
     el: document.getElementById('graph-container'),
     model: graph,
-    width: 10000,
-    height: 10000,
+    width: 10000000,
+    height: 10000000,
     gridSize: 10,
     drawGrid: true,
     background: {
@@ -26,7 +26,7 @@ paper.on('element:pointerclick', function(view, evt) {
     toggleBranch(view.model);
 })
         
-
+let duplicateFrame;
 function buildTheGraph(){
   var Elements = []
     fetch('graph.jsonld')
@@ -67,19 +67,23 @@ function buildTheGraph(){
       // example of pulling a single Outcome and linked Activity from the input data file
       // in reality we want to navigate the entire graph
       const frameArray = frame['@graph']
+      duplicateFrame = frameArray
       frameArray.forEach(node =>{
             if(node['additionalType'] == "RdAF Stage"){
               const element1 = createStage(node['@id'], node['name'])
-              setPorts(element1, ['Topics']);
+              setPorts(element1, ['Stages']);
+              element1.prop("type", "Stages")
+              
               Elements.push(element1)
               topic = node['sunyrdaf:includes']
               if(Array.isArray(topic)){
                 topic.forEach(topics =>{
                   if(topics){
+                    console.log(topics['name'])
                     const element2 = createTopics(topics['@id'], topics['name'])
+                    console.log(element2)
                     const linkStageToTopics = makeLink(element1, element2)
-                    //element2.set('hidden', true)
-                    //linkStageToTopics.set('hidden', true)
+                    setPorts(element2, ['Topics']);
                     linkStageToTopics.labels([{
                       attrs:{
                         text:{
@@ -87,9 +91,10 @@ function buildTheGraph(){
                         }
                       }
                     }])
+                    Elements.push([element2, linkStageToTopics, ])
                     checkOutcomes(topics, Elements, element2)
-                    Elements.push([element2, linkStageToTopics])
                     
+                    checkConsiderstions(topics, Elements, element2)
                   }
                 })
               }
@@ -109,34 +114,8 @@ function buildTheGraph(){
 }
 
 
-function checkOutcomes(topic, arr, parentNode){
-  for (const key in topic){
-      if(key.startsWith('sunyrdaf')){
-          if(key == "sunyrdaf:generates"){
-              if(Array.isArray(topic[key])){
-                  topic[key].forEach(outcomes =>{
-                      const out = createOutcomes(outcomes['@id'], outcomes['name'])
-                      const linkTopicToOutcome = makeLink(parentNode, out)
-                      
-                      //out.set('hidden', true)
-                      //linkTopicToOutcome.set('hidden',true)
-                      linkTopicToOutcome.labels([{
-                        attrs:{
-                          text:{
-                            text:"Outcomes"
-                          }
-                        }
-                      }])
-                      arr.push([out])
-                      arr.push([linkTopicToOutcome])
-                  })
-              }
-          }
-      }
-  
-  }
-  
-}
+//Checks for generated outcomes
+
 
 
 buildTheGraph();

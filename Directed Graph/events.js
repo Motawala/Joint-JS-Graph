@@ -14,19 +14,20 @@ function openBranch(child, shouldHide){
     findTarget.forEach(targetLink =>{
         //elements connected to the child, those in the 1st rank of the graph
         const element = targetLink.getTargetElement()
+        console.log()
         element.set('hidden', shouldHide)
         element.set('collapsed', false)
         //Make the links visible
         targetLink.set('hidden', shouldHide)
+        
         if(!element.get('collapsed')){
-            console.log(element.get('collapsed'))
             const subElementsLinks = graph.getConnectedLinks(element, {outbound:true})
             subElementsLinks.forEach(miniLinks =>{
                 if(!miniLinks.get('collapsed')){
                     const miniElements = miniLinks.getTargetElement();
-                    miniElements.set('hidden', shouldHide)
+                    miniElements.set('hidden', true)
                     miniElements.set('collapse', false)
-                    miniLinks.set('hidden', shouldHide)
+                    miniLinks.set('hidden', true)
                 }
             })
             
