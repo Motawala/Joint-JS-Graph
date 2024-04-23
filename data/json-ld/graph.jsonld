@@ -19,7 +19,7 @@
     },
     "@graph": [
         {
-            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/E",
+            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/S.1",
             "@type": "https://schema.org/Thing",
             "name": "Envision",
             "additionalType": "RdAF Stage",
@@ -34,7 +34,7 @@
             ]
         },
         {
-            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/P",
+            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/S.2",
             "@type": "https://schema.org/Thing",
             "name": "Plan",
             "additionalType": "RdAF Stage",
@@ -55,7 +55,7 @@
             ]
         },
         {
-            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/GA",
+            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/S.3",
             "@type": "https://schema.org/Thing",
             "name": "Generate/Acquire",
             "additionalType": "RdAF Stage",
@@ -74,21 +74,21 @@
             ]
         },
         {
-            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/PA",
+            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/S.4",
             "@type": "https://schema.org/Thing",
             "name": "Process/Analyze",
             "additionalType": "RdAF Stage",
             "description": "The actions performed on generated or externally acquired research data to yield processed research data, typically using software, from which observations and conclusions can be made.  "
         },
         {
-            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/SUR",
+            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/S.5",
             "@type": "https://schema.org/Thing",
             "name": "Share/Use/Reuse",
             "additionalType": "RdAF Stage",
             "description": "How raw and processed research data are disseminated, used, and reused within an organization and any constraints or encouragements to use/reuse. It also includes the dissemination, use, and reuse of raw and processed research data outside of an organization.  "
         },
         {
-            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/PD",
+            "@id": "https://data.suny.edu/entities/oried/rdaf/nist/S.6",
             "@type": "https://schema.org/Thing",
             "name": "Preserve/Discard",
             "additionalType": "RdAF Stage",
@@ -2716,7 +2716,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.1",
@@ -2761,7 +2762,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.2",
@@ -2792,7 +2794,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.3",
@@ -2823,7 +2826,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.4",
@@ -2865,7 +2869,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.3"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/method.2",
@@ -2894,7 +2899,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.5"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.5",
@@ -2935,7 +2941,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.6"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.6",
@@ -2993,7 +3000,8 @@
             "name": "Organizational intent regarding FAIR data is well defined across the institution and contributes to vision and policy",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.8"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/method.11",
@@ -3006,7 +3014,8 @@
             "name": "Support for end users included in institutional RDM and data governance standards",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.1.9"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.10",
@@ -3014,7 +3023,8 @@
             "name": "Data governance legal policies, framework, and plans exist and are continually updated",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.7",
@@ -3061,7 +3071,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.4"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.8",
@@ -3116,7 +3127,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.4"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.9",
@@ -3159,7 +3171,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.5"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.10",
@@ -3212,7 +3225,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.6"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.11",
@@ -3235,7 +3249,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.7"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.12",
@@ -3253,7 +3268,8 @@
             "name": "Community standards for social licensing of and (re)use of data exist",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.2.8"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/activity.8",
@@ -3287,7 +3303,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/participant.17",
@@ -3351,7 +3368,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.13",
@@ -3385,7 +3403,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.3"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.14",
@@ -3411,7 +3430,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.4"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.15",
@@ -3441,7 +3461,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.5"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/activity.11",
@@ -3465,7 +3486,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.5"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.23",
@@ -3478,7 +3500,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.6"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.16",
@@ -3491,7 +3514,8 @@
             "name": "Data sharing infrastructure supports FAIR data",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.7"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.25",
@@ -3502,7 +3526,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.8"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.17",
@@ -3515,7 +3540,8 @@
             "name": "Principles for Indigenous Data Governance are respected (CARE, OCAP, and ethics)",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.3.10"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.18",
@@ -3553,7 +3579,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.4.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.19",
@@ -3600,7 +3627,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.4.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.20",
@@ -3638,7 +3666,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.4.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.21",
@@ -3675,7 +3704,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.4.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.22",
@@ -3723,7 +3753,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.4.3"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.23",
@@ -3785,7 +3816,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.4.4"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.24",
@@ -3835,7 +3867,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.5.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.25",
@@ -3880,7 +3913,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.5.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.26",
@@ -3921,7 +3955,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.5.3"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.27",
@@ -3968,7 +4003,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.6.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/output.28",
@@ -4029,7 +4065,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.6.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/activity.23",
@@ -4051,7 +4088,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/E.6.3"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/role.4",
@@ -4067,7 +4105,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.1.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/participant.31",
@@ -4095,7 +4134,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.1.3"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.41",
@@ -4103,7 +4143,8 @@
             "name": "Project planning includes financial considerations to consider in estimating or assessing the costs associated with all research data and RDM activities over the data lifecycle",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.2.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://datagovernance.com/funding-models-funding-data-governance/",
@@ -4116,7 +4157,8 @@
             "name": "Data Management Planning is expected from all research projects",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.3.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/participant.32",
@@ -4134,7 +4176,8 @@
             "name": "Research data architecture includes machine-readable DMPs to standardize and automate capture RDM process",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.3.4"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.44",
@@ -4142,7 +4185,8 @@
             "name": "Research data architecture enables linkage of machine-readable DMPs other institutional data systems",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.3.5"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.45",
@@ -4150,7 +4194,8 @@
             "name": "Appropriate repository is determined to for data deposit to facilitate future access (institutional repository, shared repository, domain-specific or generalist)",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.3.6"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/participant.34",
@@ -4163,7 +4208,8 @@
             "name": "Research data project participants have necessary RDM expertise and access to RDM training",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.3.7"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.47",
@@ -4171,7 +4217,8 @@
             "name": "Data objects and their representation metadata should be documented to maintain accuracy, integrity, and reliability",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.4.7"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.48",
@@ -4179,7 +4226,8 @@
             "name": "FAIR data is supported and implemented in research project design",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.5.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.49",
@@ -4187,7 +4235,8 @@
             "name": "Research projects utilize data and metadata practices following RDM guidelines",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.6.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.50",
@@ -4195,7 +4244,8 @@
             "name": "Project data architecture should be designed to meet institutional and project data governance needs",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.7.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.51",
@@ -4203,7 +4253,8 @@
             "name": "Hardware and software infrastructure for projects producing data should match organizational research needs and standards",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.8.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.52",
@@ -4211,7 +4262,8 @@
             "name": "Project hardware and software infrastructure should support RDM",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.8.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/participant.35",
@@ -4224,7 +4276,8 @@
             "name": "Projects should be developed using federal, organizational, and community research data standards",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.9.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/activity.25",
@@ -4243,7 +4296,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.10.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/activity.26",
@@ -4270,7 +4324,8 @@
             ],
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.10.2"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.56",
@@ -4278,7 +4333,8 @@
             "name": "For all research projects, communication and outreach methods and practices should be clearly defined",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/P.11.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.57",
@@ -4286,7 +4342,8 @@
             "name": "Unique collection, generation, and storage challenges with specific data types generated in each research project are reviewed and mitigated",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.1.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.58",
@@ -4294,7 +4351,8 @@
             "name": "Unique challenges with specific data sources used in each research project are reviewed and mitigated",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.2.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.59",
@@ -4302,7 +4360,8 @@
             "name": "Factors related to how data are generated are reviewed and standardized",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.4.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.60",
@@ -4310,7 +4369,8 @@
             "name": "Factors related to the nature of qualitative data collection are reviewed and standardized",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.5.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.61",
@@ -4318,7 +4378,8 @@
             "name": "Factors related to how data are acquired are reviewed and standardized",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.6.5"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.62",
@@ -4326,7 +4387,8 @@
             "name": "Factors related to the nature of critical evaluation and data collection are reviewed and standardized",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.7.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.63",
@@ -4334,7 +4396,8 @@
             "name": "Factors related to FAIR data principles are reviewed and standardized before data collection",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.8.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.64",
@@ -4342,7 +4405,8 @@
             "name": "Community-based standards for data and metadata are considered before data collection",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.9.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         },
         {
             "@id": "https://data.suny.edu/entities/oried/rdaf/suny/outcome.65",
@@ -4350,7 +4414,8 @@
             "name": "Factors related to acquisition software are reviewed and standardized before data collection",
             "sunyrdaf:extends": [
                 "https://data.suny.edu/entities/oried/rdaf/nist/GA.10.1"
-            ]
+            ],
+            "sunyrdaf:hasScore":null
         }
     ]
 }

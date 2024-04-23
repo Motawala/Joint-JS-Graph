@@ -1,24 +1,48 @@
-<html>
-  <head>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jsonld/1.0.0/jsonld.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.4.4/joint.min.js"></script>
-<!-- Add these script tags to include JointJS and Dagre -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.1.2/joint.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.7.4/dagre.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/graphlib/2.1.7/graphlib.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.4.4/joint.min.css" rel="stylesheet" />
-<link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
-<!-- Pre-Load Fonts -->
-  <div class="font-loader" style="visibility: hidden">
-    <div style="font-family: PPFraktionSans, sans-serif; font-weight: 300; font-style: normal;">Regular</div>
-  </div>
-
-  <div id="paper-container"></div>
-    <script src="script.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUNY RDaF Explorer Prototype</title>
+    <!-- JointJS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsonld/1.0.0/jsonld.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.7/joint.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/json2csv"></script>
+    <!-- Add these script tags to include JointJS and Dagre -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.7/joint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.7.4/dagre.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/graphlib/2.1.7/graphlib.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.7/joint.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.7/joint.min.css">
+</head>
+<body>
+    <div id="desc-box" style="width: innerwidth; height: auto; border: 3px solid  black; margin:10px">
+        <p style = "font-weight: bold; font-size: 20px; font-family:Verdana, Geneva, Tahoma, sans-serif;"><u>SUNY RDaF Explorer Prototype</u></p>
+        <p style = "font-size: 15px; font-family:Verdana, Geneva, Tahoma, sans-serif;">This tool prototypes a way to explore using the
+            <a style="color:blue;"href="https://www.nist.gov/programs-projects/research-data-framework-rdaf" target="_blank">NIST RDaF Framework</a>
+            to guide campus discussions around research data management activities, particularly the Envision and Plan stages of the RDaF Framework.
+            It incorporates a downloadable scorecard, intended to be completed interactively as part of the discussion. To develop this prototype,
+            we have taken the liberty of expressing the RDaF as a graph model, and extending it with SUNY-created Outcomes and Activities.
+            See the <a  style="color:blue;" href="https://github.com/SUNYORIED/rdaf/wiki/Prototype-Data-Model" target="_blank">Wiki</a> for more information on the data model.
+            Scoring individual Outcomes as either Not Started or In Progress will expand the model to show proposed Activities and related elements. Hover your mouse over the
+            RDaF Subtopic on an Activity to see the details of the RDaF subtopic the Activity and Outcome extend.
+        </p>
+    </div>
+    <!-- Container for the graph -->
+    <div id="graph-container" style="width: innerwidth; height: 600px; border: 1px solid #ccc;"></div>
+    <script src="./js/direct.js"></script>
+    <script src="./js/Models/createNode.js"></script>
+    <script src="./js/Events/events.js"></script>
+    <script src="./js/Models/buttons.js"></script>
+    <script src="./js/position.js"></script>
+    <script src="./js/Models/el.js"></script>
+    <script src="./js/Events/hoverEvents.js"></script>
+    <script src="./js/findNode.js"></script>
+    <script src="./js/linkNodes.js"></script>
+    <script src="./js/resetAndDownloadScores.js"></script>
+    <script src="./js/Models/buttonsView.js"></script>
+</body>
 </html>
