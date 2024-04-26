@@ -55,11 +55,87 @@ function buildTheGraph(){
       },
   }))
   .then(frame => {
-
-  // example of pulling a single Outcome and linked Activity from the input data file
-  // in reality we want to navigate the entire graph
   const frameArray = frame['@graph']
   duplicateFrame = frameArray
+  createGlobalButtons()
+  frameArray.forEach(node =>{
+    if(node['additionalType'] == "RdAF Stage"){
+      var stage = linkNodes(node, Elements, "", "Stages")
+      createTextBlock(stage, node, stage)
+      root.push(stage)
+      topic = node['sunyrdaf:includes']
+      if(Array.isArray(topic) && topic){
+        topic.forEach(topicObj =>{
+          var tools = [];
+          if(topicObj){
+            //Creates the topic
+            var topicElement = linkNodes(topicObj, Elements, stage, "Topics")
+            const width = topicElement.size().width
+            const height = topicElement.size().height
+            topicElement.size(width + 200, height)
+            var topicElementPosition = topicElement.getBBox()
+            Elements.push(topicElement)
+            if(topicObj["sunyrdaf:includes"]){
+              //Creates the consideration button if a topic includes consideration
+              var port3 = createPort('Considerations', 'out', "100%", 40);
+              // Add custom tool buttons for each port
+              topicElement.addPort(port3);        // Adds a port to the element
+              const considerationButton = createConsiderationButton(port3)
+              considerationButton.options.x = parseInt(topicElementPosition.x) + parseInt(topicElementPosition.width) - 115
+              tools.push(considerationButton)       //Create the button
+            }
+            var port2 = createPort('Outcomes', 'out', "100%", 20);
+            // Add custom tool buttons for each port
+            topicElement.addPort(port2);
+            const outcomeButton = createButton(port2)
+            outcomeButton.options.x = parseInt(topicElementPosition.x) + parseInt(topicElementPosition.width) - 115
+            tools.push(outcomeButton)//Creates the Outcome button
+            graph.addCells(topicElement);
+            toolsView = new joint.dia.ToolsView({ tools: tools});
+            topicElement.findView(paper).addTools(toolsView);
+            checkOutcomes(topicObj, Elements, topicElement)
+            createTextBlock(topicElement,topicObj, stage )
+          }
+        })
+      }else{
+        if(topic){
+          tools = []
+          var topicElement = linkNodes(topic, Elements, stage, "Topics")
+          var topicElementPosition = topicElement.getBBox()
+          var port3 = createPort('Considerations', 'out', "100%", 40);
+          // Add custom tool buttons for each port
+          topicElement.addPort(port3);        // Adds a port to the element
+          const considerationButton = createConsiderationButton(port3)
+          considerationButton.options.x = parseInt(topicElementPosition.x) + parseInt(topicElementPosition.width) - 115
+          tools.push(considerationButton)       //Create the button
+          var port2 = createPort('Outcomes', 'out', "100%", 20);
+          // Add custom tool buttons for each port
+          topicElement.addPort(port2);
+          const outcomeButton = createButton(port2)
+          outcomeButton.options.x = parseInt(topicElementPosition.x) + parseInt(topicElementPosition.width) - 115
+          tools.push(outcomeButton)//Creates the Outcome button
+          graph.addCells(topicElement);
+          toolsView = new joint.dia.ToolsView({ tools: tools});
+          topicElement.findView(paper).addTools(toolsView);
+          checkOutcomes(topic, Elements, topicElement)
+          createTextBlock(topicElement,topic, stage )
+        }
+      }
+    }
+  });
+  paper.setInteractivity(false);
+  graph.addCells(Elements)
+  // Perform layout after setting positions
+  models = Elements
+  layout = doLayout();
+  })
+}
+
+
+/*
+  Creates the Download button, Reset button and Success Messsage and then adds these element, and buttons to the graph.
+*/
+function createGlobalButtons(){
   errorBlock =  createErrorBlock("download")
   resetErrorBlock = createResetBlock("reset")
   successButton = createSuccessButton("Download Successful")
@@ -71,63 +147,15 @@ function buildTheGraph(){
   resetButton.prop('name/first', "Reset Scores")
   resetButton.attr('label').refX = "15%"
   graph.addCells([downloadButton, resetButton])
-  frameArray.forEach(node =>{
-    if(node['additionalType'] == "RdAF Stage"){
-      var stage = linkNodes(node, Elements, "", "Stages")
-      graph.addCells(stage)
-      createTextBlock(stage, node, stage)
-      root.push(stage)
-      topic = node['sunyrdaf:includes']
-      if(Array.isArray(topic)){
-        topic.forEach(topicObj =>{
-        var tools = [];
-        if(topicObj){
-          //Creates the topic
-          var topicElement = linkNodes(topicObj, Elements, stage, "Topics")
-          const width = topicElement.size().width
-          const height = topicElement.size().height
-          topicElement.size(width + 200, height)
-          var topicElementPosition = topicElement.getBBox()
-          Elements.push(topicElement)
-          if(topicObj["sunyrdaf:includes"]){
-            //Creates the consideration button if a topic includes consideration
-            var port3 = createPort('Considerations', 'out', "100%", 40);
-            // Add custom tool buttons for each port
-            topicElement.addPort(port3);        // Adds a port to the element
-            const considerationButton = createConsiderationButton(port3)
-            considerationButton.options.x = parseInt(topicElementPosition.x) + parseInt(topicElementPosition.width) - 115
-            tools.push(considerationButton)       //Create the button
-          }
-          var port2 = createPort('Outcomes', 'out', "100%", 20);
-          // Add custom tool buttons for each port
-          topicElement.addPort(port2);
-          const outcomeButton = createButton(port2)
-          outcomeButton.options.x = parseInt(topicElementPosition.x) + parseInt(topicElementPosition.width) - 115
-          tools.push(outcomeButton)//Creates the Outcome button
-          graph.addCells(topicElement);
-          toolsView = new joint.dia.ToolsView({ tools: tools});
-          topicElement.findView(paper).addTools(toolsView);
-          checkOutcomes(topicObj, Elements, topicElement)
-          createTextBlock(topicElement,topicObj, stage )
-        }
-      })
-    }
-  }
-  });
-  paper.setInteractivity(false);
-  graph.addCells(Elements)
-  // Perform layout after setting positions
-  models = Elements
-  layout = doLayout();
-  })
 }
+
 
 /*
   * Create and link Outcome elements
   * @param {Object} topic - the JSON-LD topic node
   * @param {Object[]} arr - list of JointJS shapes created so far
   * @param {Object} parentNode - the JointJS shape that is the parent of this topic
-  *
+  * @Returns creates the outcome elements.
 */
 function checkOutcomes(topic, arr, parentNode){
   //Creates all the Outcomes that are generated by the topic
@@ -162,7 +190,7 @@ function checkOutcomes(topic, arr, parentNode){
   * @param {Object} outcome - the JSON-LD topic node
   * @param {Object[]} arr - list of JointJS shapes created so far
   * @param {Object} parentNode - the JointJS shape that is the parent of this topic
-  *
+  * @Returns the consideration SVG element.
 */
 function checkForConsiderations(node, arr, parentNode){
 
@@ -217,61 +245,44 @@ function checkForConsiderations(node, arr, parentNode){
 }
 
 /*
- * Create and link Activities elements
+ * Checks the target elements of an activity - Outputs, Methods, Considerations, Participants, Roles, and Resources
  * @param {Object} Outcome - the JSON-LD topic node
  * @param {Object[]} arr - list of JointJS shapes created so far
  * @param {Object} parentNode - the JointJS shape that is the parent of this topic
- *
  */
 function checkForActivities(outcome, arr, parentNode){
   const embedButton = buttonView("Activities", parentNode)
   for (const key in outcome){
     if(key.startsWith('sunyrdaf')){
       if(key == "sunyrdaf:resultsFrom"){
-        if(Array.isArray(outcome[key])){ //Conditions to create multiple activities
-          outcome[key].forEach(activity =>{
-            const activityElement = linkNodes(activity, arr, parentNode, "Activities")
-            if(activity['sunyrdaf:extends']){
-              var subTopic = checkForSubTopics(activity['sunyrdaf:extends'], arr, parentNode)
-              subTopicTextBlock(subTopic, activityElement)    //Creates the textBlock for the SubTopic button in Activities
-            }
-            if(activity['sunyrdaf:generates']){
-              checkForActivitiesTarget(activity, arr, activityElement)
-            }
-            if(activity['sunyrdaf:includes']){
-              checkForActivitiesTarget(activity, arr, activityElement)
+        if(outcome[key]['name'] == undefined){
+          duplicateFrame.forEach(activity =>{
+            if(activity['@id'] == outcome[key]){
+              const activityElement = linkNodes(activity, arr, parentNode, "Activities")
+              if(activity['sunyrdaf:extends']){
+                var subTopic = checkForSubTopics(activity['sunyrdaf:extends'], arr, activityElement)
+                subTopicTextBlock(subTopic, activityElement)    //Creates the textBlock for the SubTopic button in Activities
+              }
+              if(activity['sunyrdaf:generates']){
+                checkForActivitiesTarget(activity, arr, activityElement)
+              }
+              if(activity['sunyrdaf:includes']){
+                checkForActivitiesTarget(activity, arr, activityElement)
+              }
             }
           })
-        }else{// Condition to create a single activity
-          if(outcome[key]['name'] == undefined){
-            duplicateFrame.forEach(activity =>{
-              if(activity['@id'] == outcome[key]){
-                const activityElement = linkNodes(activity, arr, parentNode, "Activities")
-                if(activity['sunyrdaf:extends']){
-                  var subTopic = checkForSubTopics(activity['sunyrdaf:extends'], arr, activityElement)
-                  subTopicTextBlock(subTopic, activityElement)    //Creates the textBlock for the SubTopic button in Activities
-                }
-                if(activity['sunyrdaf:generates']){
-                  checkForActivitiesTarget(activity, arr, activityElement)
-                }
-                if(activity['sunyrdaf:includes']){
-                  checkForActivitiesTarget(activity, arr, activityElement)
-                }
-              }
-            })
-          }else{
-            var activity = outcome[key]
-            const activityElement = linkNodes(activity, arr, parentNode, "Activities")
-            if(activity['sunyrdaf:extends']){
-              var subTopic = checkForSubTopics(activity['sunyrdaf:extends'], arr, parentNode)
-              subTopicTextBlock(subTopic, activityElement)    //Creates the textBlock for the SubTopic button in Activities
-            }
-            if(activity['sunyrdaf:generates']){
-              checkForActivitiesTarget(activity, arr, activityElement)
-            }
-            if(activity['sunyrdaf:includes']){
-              checkForActivitiesTarget(activity, arr, activityElement)
-            }
+        }else{
+          var activity = outcome[key]
+          const activityElement = linkNodes(activity, arr, parentNode, "Activities")
+          if(activity['sunyrdaf:extends']){
+            var subTopic = checkForSubTopics(activity['sunyrdaf:extends'], arr, parentNode)
+            subTopicTextBlock(subTopic, activityElement)    //Creates the textBlock for the SubTopic button in Activities
+          }
+          if(activity['sunyrdaf:generates']){
+            checkForActivitiesTarget(activity, arr, activityElement)
+          }
+          if(activity['sunyrdaf:includes']){
+            checkForActivitiesTarget(activity, arr, activityElement)
           }
         }
       }else if(key == "sunyrdaf:includes"){
@@ -297,25 +308,30 @@ function checkForActivities(outcome, arr, parentNode){
  * @param {Object} topic - the JSON-LD topic node
  * @param {Object[]} arr - list of JointJS shapes created so far
  * @param {Object} parentNode - the JointJS shape that is the parent of this topic
- *
+ * @Returns the subTopic description.
  */
 function checkForSubTopics(node, arr, parentNode){
   if(node['name'] || node['description']){
-    const subTopic = linkNodes(node, arr, parentNode, "Subtopic")
-    return subTopic;
+    const subTopicDescription = linkNodes(node, arr, parentNode, "Subtopic")
+    return subTopicDescription;
   }else {
     for (const nodes of duplicateFrame) {
       if (nodes['@id'] == node) {
         node = nodes
-        const subTopic = linkNodes(node, arr, parentNode, "Subtopic")
-        return subTopic;
+        const subTopicDescription = linkNodes(node, arr, parentNode, "Subtopic")
+        return subTopicDescription;
       }
     }
   }
 }
 
 
-
+/*
+  * This function creates the Layout of the graph.
+  * Sets the position of the elements.
+  * Laysout the elements from Left to Right.
+  * Changes the size of the paper.
+*/
 function doLayout() {
   var counter = 0;
   // Apply layout using DirectedGraph plugin
@@ -363,7 +379,6 @@ graph = new dia.Graph({}, { cellNamespace: shapes });
 
 // Create a new paper, which is a wrapper around SVG element
 paper = new dia.Paper({
-  interactive: { vertexAdd: false }, // disable default vertexAdd interaction
   el: document.getElementById('graph-container'),
   model: graph,
   interactive: { vertexAdd: false }, // disable default vertexAdd interaction,
@@ -372,6 +387,7 @@ paper = new dia.Paper({
   gridSize: 10,
   perpendicularLinks: true,
   drawGrid: true,
+  embeddingMode: true,
   background: {
     color: '#f9f9f9'
   },

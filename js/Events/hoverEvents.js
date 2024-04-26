@@ -274,3 +274,48 @@ function showMessage(messageBlock, duration) {
         messageBlock.set('hidden', true); // Remove the message after the specified duration
     }, duration);
 }
+
+/*
+    Events to handel hover over the GitHub Button at the top of the page
+*/
+const githubButton = document.getElementById('git-button');
+const githubIcon = document.getElementById('git-icon')
+
+githubButton.addEventListener("mouseenter", function( event ) {
+    githubButton.style.backgroundColor = "black";
+    githubIcon.style.color = "white"
+    githubButton.style.color = "white"
+});
+
+githubButton.addEventListener("mouseleave", function( event ) {
+    githubButton.style.backgroundColor = "white";
+    githubIcon.style.color = "black"
+    githubButton.style.color = "black"
+});
+
+githubButton.addEventListener("pointerdown", function( event ) {
+    window.open("https://github.com/SUNYORIED/rdaf", "_blank")
+});
+
+
+/*
+    Events to handel hover over the GitHub Button at the top of the page
+*/
+const guideButton = document.getElementById('guide-button');
+const guideIcon = document.getElementById('guide-icon')
+
+guideButton.addEventListener("mouseenter", function( event ) {
+    guideButton.style.backgroundColor = "black";
+    guideIcon.style.color = "white"
+    guideButton.style.color = "white"
+});
+
+guideButton.addEventListener("mouseleave", function( event ) {
+    guideButton.style.backgroundColor = "white";
+    guideIcon.style.color = "black"
+    guideButton.style.color = "black"
+});
+
+guideButton.addEventListener("pointerdown", function( event ) {
+    window.open("https://github.com/SUNYORIED/rdaf/wiki/Getting-Started", "_blank")
+});

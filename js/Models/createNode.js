@@ -3,8 +3,12 @@ var PORT_WIDTH = 90;
 const PORT_HEIGHT = 20;
 const PORT_GAP = 20;
 
-//Looking on How to prevent the links from overlapping the nearby elements, and how to set the length of the links
-// Also how to increase the size of the paper when object overflow
+/*
+  * This function creates a link two elements.
+  * @param {Object} from, Joint JS element, source element.
+  * @param {Object} to, Joint JS element, target element.
+  * @Return the link between the source and target.
+*/
 function makeLink(from,to) {
   const portName = to.prop('name/first')
   let color
@@ -30,6 +34,9 @@ function makeLink(from,to) {
           stroke: color, // Change the color of the link to blue
           strokeWidth: 2, // Adjust the width of the link if needed
       },
+      root:{
+        title:"Link from " + from.prop('name/first') + " to " + to.prop('name/first')
+      },
     },
     vertices: []
 
@@ -51,7 +58,12 @@ function makeLink(from,to) {
 }
 
 
-
+/*
+  * This function used to create the stage elements.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createStage(id, name){
   const node = new joint.shapes.standard.Rectangle({
     id: id,
@@ -87,13 +99,17 @@ function createStage(id, name){
       return node
 }
 
-
+/*
+  * This function used to create the Topic element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createTopics(id, name){
   const textWidth = name.length * 8; // Approximate width based on font size and average character width
   const width = Math.max(textWidth, 100); // Ensure a minimum width to accommodate shorter text
   const node =  new joint.shapes.standard.Rectangle({
     id: id,
-
     size: {
       width: width,
       height: 70
@@ -122,10 +138,16 @@ function createTopics(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Topic")
   return node;
 }
 
-
+/*
+  * This function used to create the Consideration element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createConsiderations(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 10
@@ -164,12 +186,18 @@ function createConsiderations(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Consideration")
   return node
 }
 
 
 
-
+/*
+  * This function used to create the Outcome element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createOutcomes(id, name){
   const textWidth = name.length * 9.5; // Approximate width based on font size and average character width
   const width = Math.max(textWidth, 100); // Ensure a minimum width to accommodate shorter text
@@ -191,7 +219,6 @@ function createOutcomes(id, name){
         cursor: "pointer"
       },
       body: {
-        type:'TextBlock',
         strokeWidth: 2,
         fill: "#007eb3",
         cursor: "pointer"
@@ -204,24 +231,47 @@ function createOutcomes(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Outcomes")
+
   return node;
 }
 
 
+/*
+  * This function used to create the Activity element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createActivities(id, name){
-
   const textWidth = name.length * 10; // Approximate width based on font size and average character width
-  const width = Math.max(textWidth, 200); // Ensure a minimum width to accommodate shorter text
+  var width = Math.max(textWidth, 200); // Ensure a minimum width to accommodate shorter text
+  if(width > 700){
+    width = 800
+    if(name.length > 60){
+      for(var i = 0; i < name.length; i++){
+        if(i > 50){
+          if(name.charAt(i) == " "){
+            var newName = name.slice(0, i) + '\n' + name.slice(i + 1);
+            name = newName
+            i = name.length + 1
+          }
+        }
+      }
+    }
+  }else{
+    width = (name.length * 10) + 170
+  }
   const node =  new joint.shapes.standard.Rectangle({
       id: id,
       size: {
-        width: width + 170  ,
+        width: width,
         height: 145
       },
       attrs: {
         label: {
         fontWeight: "bold",
-        fontSize: 17,
+        fontSize: 20,
         fontFamily: "sans-serif",
         fill: "whitesmoke",
         stroke: "#333333",
@@ -232,7 +282,7 @@ function createActivities(id, name){
       body: {
         strokeWidth: 3,
         fill: "#007eb3",
-        cursor: "grab",
+        cursor: "pointer",
         margin:10
       },
     },
@@ -243,9 +293,17 @@ function createActivities(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Activity")
   return node
 }
 
+
+/*
+  * This function used to create the Output element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createOutputs(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 8
@@ -284,9 +342,16 @@ function createOutputs(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Output")
   return node
 }
 
+/*
+  * This function used to create the Participant element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createParticipants(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 9
@@ -325,9 +390,17 @@ function createParticipants(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Participant")
   return node
 }
 
+
+/*
+  * This function used to create the Role element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createRoles(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 9
@@ -365,9 +438,17 @@ function createRoles(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Role")
   return node
 }
 
+
+/*
+  * This function used to create the Method element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createMethods(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 9
@@ -405,9 +486,17 @@ function createMethods(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Method")
   return node
 }
 
+
+/*
+  * This function used to create the Resource element.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createResources(id, name){
   if(typeof name == 'string'){
     var textWidth = name.length * 9
@@ -448,9 +537,17 @@ function createResources(id, name){
   });
   node.set('hidden', true);
   node.set('collapsed', false)
+  node.attr('root/title', "Resource")
   return node
 }
 
+
+/*
+  * This function used to create the Download element, but it is used as a button.
+  * @param {Object} id, Identifier for the element.
+  * @param {Object} name, label for the element.
+  * @Return the Joint JS element.
+*/
 function createDownloadButton(id, name){
   const node =  new joint.shapes.standard.Rectangle({
     id: id,
@@ -484,7 +581,7 @@ function createDownloadButton(id, name){
     },
   });
   node.position(50, 10)
-  node.attr('root/title', 'Download Button')
+  node.attr('root/title', 'Exports the scorecard as a CSV file with the following columns:\nStage ID, Stage Name, Topic ID, Topic Name, Subtopic ID,\nSubtopic Name, Outcome ID, Outcome Name, Score, Date of Download')
   return node
 }
 
@@ -521,7 +618,7 @@ function createResetButton(id, name){
     }
   });
   node.position(50, 60)
-  node.attr('root/title', 'Reset Button')
+  node.attr('root/title', "Resets the Score on Outcomes")
   return node
 }
 
